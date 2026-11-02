@@ -2,6 +2,9 @@ package io.github.colochampre.riskofrain_items.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import io.github.colochampre.riskofrain_items.RoRMod;
+import io.github.colochampre.riskofrain_items.events.ModEvents;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -13,6 +16,10 @@ public final class RoRModForge {
     // Run our common setup.
     RoRMod.init();
 
+    MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingDamage);
   }
 
+  private static void onLivingDamage(LivingDamageEvent event) {
+    event.setAmount(ModEvents.onLivingDamage(event.getEntity(), event.getSource(), event.getAmount()));
+  }
 }
