@@ -17,7 +17,7 @@ Test runner: none in the project. Checks are `./gradlew build --offline`, dedica
 - [x] T2 S1,S2,S3 inline: registries, items, block, resources. `9bbee3d`
 - [x] T3 S2,S4 inline: item effects in common, damage hook per platform. `cf510ca`
 - [x] T4 S2,S3,S4 inline: chest loot in common, replacing the Forge loot modifiers. `591bb72`
-- [ ] T5 S1-S4 inline: build (done), server start on both loaders and loot check from the console (pending EULA authorization for `fabric/run` and `forge/run`).
+- [x] T5 S1-S4 inline: build, server start on both loaders, loot check from the console.
 - [ ] T6 S4 user: in-game test on Fabric and Forge.
 
 Risk: item 6 (no automated test would catch a regression in the damage hook or the loot pools). Item 5 does not apply: the build copies the versions `riskofrain_mobs` already uses.
@@ -45,3 +45,11 @@ Risk: item 6 (no automated test would catch a regression in the damage hook or t
   - The Fabric jar has the mixin config and a refmap mapping `actuallyHurt` to `method_6074`. The Forge jar has no mixins.
   - `LOAD ordinal = 6` read from the bytecode of `LivingEntity` and `Player` in 1.20.1: the 7th load of the amount in each is the `amount != 0` check. Not yet proven at runtime.
   - Next: start both servers, confirm the mixin applies, and count injected items with console `loot` commands.
+- L4: server checks on `591bb72`. The user authorized the EULA for `fabric/run` and `forge/run`.
+  - Both dedicated servers start, reach `Done` and save on stop.
+  - Exported Fabric classes (`-Dmixin.debug.export=true`): in `LivingEntity` and `Player`, the handler runs right before `amount != 0`, after armor and absorption. Proven placement only: no player damage was exercised, that is T6.
+  - 200 console rolls per table, Fabric / Forge: `simple_dungeon` with item 114 / 106, `shipwreck_supply` 102 / 117, `jungle_temple` always has an uncommon item 200 / 200, `village_weaponsmith` (control) 0 / 0.
+  - 2000 more rolls of `simple_dungeon` on Fabric: 953 with item. Across all runs, 1601 of 3200 rolls on the small pool hit (50.03%).
+  - Count split 488 of 1 and 465 of 2. Common items come out even, uncommon items come out even at about half of a common item.
+  - Uncommon share across runs: 315 of 1392 (22.6%, 2.4 sigma from 20%). The weights are exactly 32 of 160, and no single weight looks wrong, so this is treated as sampling noise, not proven.
+  - Offline run note: `architectury-transformer-5.2.91-agent.jar` sits in the Gradle cache under the Shedaniel repository, which this project does not declare, so `runServer --offline` fails with "No cached version available for offline mode". A temporary init script adding that repository worked. Online, Gradle downloads the agent by itself, so nothing changed in the project.
