@@ -52,4 +52,5 @@ Risk: item 6 (no automated test would catch a regression in the damage hook or t
   - 2000 more rolls of `simple_dungeon` on Fabric: 953 with item. Across all runs, 1601 of 3200 rolls on the small pool hit (50.03%).
   - Count split 488 of 1 and 465 of 2. Common items come out even, uncommon items come out even at about half of a common item.
   - Uncommon share across runs: 315 of 1392 (22.6%, 2.4 sigma from 20%). The weights are exactly 32 of 160, and no single weight looks wrong, so this is treated as sampling noise, not proven.
+  - Independent read-only verifier: S1-S4 met by reading, no blockers. It left T6 to confirm that Architectury's pickup and death hooks fire at the same moment on Fabric.
   - Offline run note: `architectury-transformer-5.2.91-agent.jar` sits in the Gradle cache under the Shedaniel repository, which this project does not declare, so `runServer --offline` fails with "No cached version available for offline mode". A temporary init script adding that repository worked. Online, Gradle downloads the agent by itself, so nothing changed in the project.
