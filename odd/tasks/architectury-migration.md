@@ -13,11 +13,11 @@ Test runner: none in the project. Checks are `./gradlew build --offline`, dedica
 
 ## Tasks
 
-- [ ] T1 S1,S2 inline: Gradle project, metadata, entry points, docs.
-- [ ] T2 S1,S2,S3 inline: registries, items, block, resources.
-- [ ] T3 S2,S4 inline: item effects in common, damage hook per platform.
-- [ ] T4 S2,S3,S4 inline: chest loot in common, replacing the Forge loot modifiers.
-- [ ] T5 S1-S4 inline: build, server start on both loaders, loot check from the console.
+- [x] T1 S1,S2 inline: Gradle project, metadata, entry points, docs. `ecbb819`
+- [x] T2 S1,S2,S3 inline: registries, items, block, resources. `9bbee3d`
+- [x] T3 S2,S4 inline: item effects in common, damage hook per platform. `cf510ca`
+- [x] T4 S2,S3,S4 inline: chest loot in common, replacing the Forge loot modifiers. `591bb72`
+- [ ] T5 S1-S4 inline: build (done), server start on both loaders and loot check from the console (pending EULA authorization for `fabric/run` and `forge/run`).
 - [ ] T6 S4 user: in-game test on Fabric and Forge.
 
 Risk: item 6 (no automated test would catch a regression in the damage hook or the loot pools). Item 5 does not apply: the build copies the versions `riskofrain_mobs` already uses.
@@ -36,3 +36,12 @@ Risk: item 6 (no automated test would catch a regression in the damage hook or t
   - `SmallChestBlockEntity` and the block entity registry are fully commented-out work in progress. They move as they are, Forge imports included.
   - `add_*_chance_items.json` loot tables are not referenced anywhere. They move as they are.
   - Known difference: Forge stops `actuallyHurt` when the raw damage is 0, vanilla does not. A player hitting a mob with a 0-damage projectile (snowball, egg) can play proc sounds on Fabric. Player victims are not affected, because `Player.hurt` already rejects 0 damage.
+- L3: checks so far, on `591bb72`.
+  - `./gradlew build --offline`: passes. `9bbee3d` and `cf510ca` also compile on both loaders.
+  - All 51 item, block, painting and sound ids match the old mod. The only ids removed are the 3 loot modifier serializers.
+  - All 102 kept resources are byte-identical. The only ones removed are the 3 Forge loot modifier files.
+  - Item classes differ only in the renamed `RoRItems` and `RoRSounds`.
+  - The common loot table list matches the old one except for the `shipwreck_supply` fix.
+  - The Fabric jar has the mixin config and a refmap mapping `actuallyHurt` to `method_6074`. The Forge jar has no mixins.
+  - `LOAD ordinal = 6` read from the bytecode of `LivingEntity` and `Player` in 1.20.1: the 7th load of the amount in each is the `amount != 0` check. Not yet proven at runtime.
+  - Next: start both servers, confirm the mixin applies, and count injected items with console `loot` commands.
