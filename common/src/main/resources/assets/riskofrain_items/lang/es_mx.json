@@ -28,7 +28,7 @@
   "item.riskofrain_items.crowbar.tooltip_3": "a enemigos con 80% de vida o mas",
   "item.riskofrain_items.crowbar.tooltip_total": "Total: %s%% de daño (%s en el inventario)",
 
-  "item.riskofrain_items.goat_hoof.tooltip_1": "Al esprintar:",
+  "item.riskofrain_items.goat_hoof.tooltip_1": "Al correr:",
   "item.riskofrain_items.goat_hoof.tooltip_2": "Incrementa la velocidad en 14% (+14% por stack)",
   "item.riskofrain_items.goat_hoof.tooltip_total": "Total: +%s%% de velocidad (%s en el inventario)",
 
