@@ -1,6 +1,7 @@
 package io.github.colochampre.riskofrain_items;
 
 import io.github.colochampre.riskofrain_items.events.ModEvents;
+import io.github.colochampre.riskofrain_items.events.PassiveItemEffects;
 import io.github.colochampre.riskofrain_items.loot.ModLootTables;
 import io.github.colochampre.riskofrain_items.registry.RoRBlocks;
 import io.github.colochampre.riskofrain_items.registry.RoRCreativeTabs;
@@ -24,6 +25,7 @@ public final class RoRMod {
     RoRCreativeTabs.init();
     RoRPaintings.init();
     ModEvents.init();
+    PassiveItemEffects.init();
     ModLootTables.init();
   }
 }

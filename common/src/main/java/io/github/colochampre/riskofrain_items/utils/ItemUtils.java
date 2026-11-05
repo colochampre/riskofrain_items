@@ -78,22 +78,16 @@ public class ItemUtils {
   }
 
   public static boolean hasItemStack(Player player, Item item) {
-    Inventory inv = player.getInventory();
-    for (int i = 0; i <= 35; ++i) {
-      ItemStack stack = inv.getItem(i);
-      if (ItemStack.isSameItem(stack, item.getDefaultInstance())) {
-        return true;
-      }
-    }
-    return false;
+    return countItemStack(player, item) > 0;
   }
 
+  // Counts the whole inventory: main slots, armor slots and offhand
   public static int countItemStack(Player player, Item item) {
     int total = 0;
     Inventory inv = player.getInventory();
     for (int i = 0; i < inv.getContainerSize(); ++i) {
       ItemStack stack = inv.getItem(i);
-      if (ItemStack.isSameItem(stack, item.getDefaultInstance())) {
+      if (stack.is(item)) {
         total += stack.getCount();
       }
     }

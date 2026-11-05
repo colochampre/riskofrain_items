@@ -27,8 +27,8 @@
   "item.riskofrain_items.crowbar.tooltip_2": "Inflige 150% (+30% por stack) de daño",
   "item.riskofrain_items.crowbar.tooltip_3": "a enemigos con 80% de vida o mas",
 
-  "item.riskofrain_items.goat_hoof.tooltip_1": "Incrementa la velocidad de movimiento en 20%",
-  "item.riskofrain_items.goat_hoof.tooltip_2": "Cada 4 stacks: +20% velocidad de movimiento",
+  "item.riskofrain_items.goat_hoof.tooltip_1": "Al correr:",
+  "item.riskofrain_items.goat_hoof.tooltip_2": "Incrementa la velocidad en 14% (+14% por stack)",
 
   "item.riskofrain_items.golden_gun.tooltip_1": "Inflige daño extra dependiendo de cuanto",
   "item.riskofrain_items.golden_gun.tooltip_2": "oro tiene el jugador, hasta un maximo",
