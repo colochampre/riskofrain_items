@@ -1,31 +1,17 @@
 package io.github.colochampre.riskofrain_items.items;
 
-import io.github.colochampre.riskofrain_items.registry.RoRSounds;
 import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
-import io.github.colochampre.riskofrain_items.utils.ItemUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
+// The healing is applied in PassiveItemEffects
 public class BustlingFungusItem extends Item {
-  private static final int STILL_TICKS = 40;    // 2 seconds standing still before healing starts
-  private static final int HEAL_INTERVAL = 20;  // then heal once per second
-
-  /* Per-player state, so each player in multiplayer keeps their own timer (Bungus multiplayer fix by Yuese) */
-  private static final Map<UUID, StillState> STATES = new HashMap<>();
-
   public BustlingFungusItem(Properties props) {
     super(props);
   }
@@ -38,51 +24,5 @@ public class BustlingFungusItem extends Item {
     // Healing past max health is lost, so the total shown stops at 100%
     TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.percent(ItemFormulas.bustlingFungusHealPercent(count))});
     super.appendHoverText(itemstack, level, tooltip, flag);
-  }
-
-  @Override
-  public void inventoryTick(ItemStack stack, Level level, @NotNull Entity entity, int itemSlot, boolean isSelected) {
-    if (!level.isClientSide() && entity instanceof Player player) {
-      healIfStill(player, level);
-    }
-    super.inventoryTick(stack, level, entity, itemSlot, isSelected);
-  }
-
-  private void healIfStill(Player player, Level level) {
-    StillState state = STATES.computeIfAbsent(player.getUUID(), uuid -> new StillState());
-    long time = level.getGameTime();
-    // Every fungus stack in the inventory ticks; only the first one each tick counts
-    if (state.lastTick == time) {
-      return;
-    }
-    boolean tickedLastTick = state.lastTick == time - 1;
-    state.lastTick = time;
-
-    boolean samePosition = player.getX() == state.x && player.getY() == state.y && player.getZ() == state.z;
-    // A skipped tick means the player had no fungus for a while, so the timer starts over
-    state.stillTicks = tickedLastTick && samePosition ? state.stillTicks + 1 : 0;
-    state.x = player.getX();
-    state.y = player.getY();
-    state.z = player.getZ();
-
-    if (state.stillTicks < STILL_TICKS || player.getHealth() >= player.getMaxHealth()) {
-      return;
-    }
-    if (state.stillTicks == STILL_TICKS) {
-      level.playSound(null, player.getX(), player.getY(), player.getZ(), RoRSounds.BUNGUS_PROC_1.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
-      level.playSound(null, player.getX(), player.getY(), player.getZ(), RoRSounds.BUNGUS_PROC_2.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
-    }
-    if ((state.stillTicks - STILL_TICKS) % HEAL_INTERVAL == 0) {
-      int count = ItemUtils.countItemStack(player, this);
-      player.heal((float) (player.getMaxHealth() * ItemFormulas.bustlingFungusHealPercent(count) / 100.0));
-    }
-  }
-
-  private static class StillState {
-    long lastTick = Long.MIN_VALUE;
-    int stillTicks;
-    double x;
-    double y;
-    double z;
   }
 }

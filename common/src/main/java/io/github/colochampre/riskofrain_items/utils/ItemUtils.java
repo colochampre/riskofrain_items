@@ -99,7 +99,8 @@ public class ItemUtils {
     return gold;
   }
 
-  // Counts the whole inventory: main slots, armor slots and offhand
+  // Counts the whole inventory (main slots, armor slots and offhand) and the containers sitting in it, such as
+  // shulker boxes or backpacks, but not containers inside those
   public static int countItemStack(Player player, Item item) {
     int total = 0;
     Inventory inv = player.getInventory();
@@ -107,6 +108,8 @@ public class ItemUtils {
       ItemStack stack = inv.getItem(i);
       if (stack.is(item)) {
         total += stack.getCount();
+      } else if (!stack.isEmpty()) {
+        total += ContainerContents.countInside(stack, item);
       }
     }
     return total;
