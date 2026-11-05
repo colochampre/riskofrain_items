@@ -1,7 +1,7 @@
 package io.github.colochampre.riskofrain_items.items;
 
-import io.github.colochampre.riskofrain_items.client.ClientPlayerAccess;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.utils.ItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -14,20 +14,14 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 public class BustlingFungusItem extends Item {
   private static final int STILL_TICKS = 40;    // 2 seconds standing still before healing starts
   private static final int HEAL_INTERVAL = 20;  // then heal once per second
-  private static final double FIRST_HEAL_PERCENT = 5.0;      // 5% of max health for the first fungus
-  private static final double EXTRA_HEAL_PERCENT = 2.25;     // +2.25% for each additional fungus
-  private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.ROOT));
 
   /* Per-player state, so each player in multiplayer keeps their own timer (Bungus multiplayer fix by Yuese) */
   private static final Map<UUID, StillState> STATES = new HashMap<>();
@@ -41,20 +35,9 @@ public class BustlingFungusItem extends Item {
     tooltip.add(Component.translatable("item.riskofrain_items.bustling_fungus.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.bustling_fungus.tooltip_2"));
     tooltip.add(Component.translatable("item.riskofrain_items.bustling_fungus.tooltip_3"));
-    if (level != null && level.isClientSide()) {
-      Player player = ClientPlayerAccess.localPlayer();
-      int count = player == null ? 0 : ItemUtils.countItemStack(player, this);
-      if (count > 0) {
-        // Healing past max health is lost, so the total shown stops at 100%
-        String total = PERCENT_FORMAT.format(Math.min(healPercent(count), 100.0));
-        tooltip.add(Component.translatable("item.riskofrain_items.bustling_fungus.tooltip_total", total, count));
-      }
-    }
+    // Healing past max health is lost, so the total shown stops at 100%
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.percent(ItemFormulas.bustlingFungusHealPercent(count))});
     super.appendHoverText(itemstack, level, tooltip, flag);
-  }
-
-  private static double healPercent(int count) {
-    return FIRST_HEAL_PERCENT + EXTRA_HEAL_PERCENT * (count - 1);
   }
 
   @Override
@@ -91,7 +74,7 @@ public class BustlingFungusItem extends Item {
     }
     if ((state.stillTicks - STILL_TICKS) % HEAL_INTERVAL == 0) {
       int count = ItemUtils.countItemStack(player, this);
-      player.heal((float) (player.getMaxHealth() * healPercent(count) / 100.0));
+      player.heal((float) (player.getMaxHealth() * ItemFormulas.bustlingFungusHealPercent(count) / 100.0));
     }
   }
 

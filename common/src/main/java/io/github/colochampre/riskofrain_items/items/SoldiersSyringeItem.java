@@ -1,5 +1,6 @@
 package io.github.colochampre.riskofrain_items.items;
 
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +21,10 @@ public class SoldiersSyringeItem extends Item {
   public void appendHoverText(ItemStack itemstack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
     tooltip.add(Component.translatable("item.riskofrain_items.soldiers_syringe.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.soldiers_syringe.tooltip_2"));
+    TotalTooltip.append(tooltip, level, this, (player, count) -> {
+      int hasteLevel = ItemFormulas.soldiersSyringeAmplifier(count) + 1;
+      return new Object[]{10 * hasteLevel, 20 * hasteLevel};
+    });
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 }

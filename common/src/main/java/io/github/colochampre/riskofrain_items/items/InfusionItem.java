@@ -1,5 +1,6 @@
 package io.github.colochampre.riskofrain_items.items;
 
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -22,6 +23,7 @@ public class InfusionItem extends Item {
     tooltip.add(Component.translatable("item.riskofrain_items.infusion.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.infusion.tooltip_2"));
     tooltip.add(Component.translatable("item.riskofrain_items.infusion.tooltip_3"));
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.number(ItemFormulas.infusionMaxBonus(count) / 2.0D)});
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 

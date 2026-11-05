@@ -1,5 +1,6 @@
 package io.github.colochampre.riskofrain_items.items;
 
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +22,7 @@ public class TopazBroochItem extends Item {
     tooltip.add(Component.translatable("item.riskofrain_items.topaz_brooch.tooltip_2"));
     tooltip.add(Component.translatable("item.riskofrain_items.topaz_brooch.tooltip_3"));
     tooltip.add(Component.translatable("item.riskofrain_items.topaz_brooch.tooltip_4"));
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{2 * (ItemFormulas.topazBroochAmplifier(count, player.getMaxHealth()) + 1)});
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 }

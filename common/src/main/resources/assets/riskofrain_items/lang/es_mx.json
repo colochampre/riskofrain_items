@@ -26,46 +26,57 @@
   "item.riskofrain_items.crowbar.tooltip_1": "Al golpear:",
   "item.riskofrain_items.crowbar.tooltip_2": "Inflige 150% (+30% por stack) de daño",
   "item.riskofrain_items.crowbar.tooltip_3": "a enemigos con 80% de vida o mas",
+  "item.riskofrain_items.crowbar.tooltip_total": "Total: %s%% de daño (%s en el inventario)",
 
-  "item.riskofrain_items.goat_hoof.tooltip_1": "Al correr:",
+  "item.riskofrain_items.goat_hoof.tooltip_1": "Al esprintar:",
   "item.riskofrain_items.goat_hoof.tooltip_2": "Incrementa la velocidad en 14% (+14% por stack)",
+  "item.riskofrain_items.goat_hoof.tooltip_total": "Total: +%s%% de velocidad (%s en el inventario)",
 
   "item.riskofrain_items.golden_gun.tooltip_1": "Inflige daño extra dependiendo de cuanto",
   "item.riskofrain_items.golden_gun.tooltip_2": "oro tiene el jugador, hasta un maximo",
   "item.riskofrain_items.golden_gun.tooltip_3": "de 40% con 4 stacks de lingotes de oro.",
   "item.riskofrain_items.golden_gun.tooltip_4": "Stackear reduce a la mitad el oro requerido.",
+  "item.riskofrain_items.golden_gun.tooltip_total": "Total: +%s%% de daño con tu oro (%s en el inventario)",
 
   "item.riskofrain_items.infusion.tooltip_1": "Al matar:",
   "item.riskofrain_items.infusion.tooltip_2": "Incrementa la vida maxima en 0.5, hasta un maximo",
   "item.riskofrain_items.infusion.tooltip_3": "de 10 corazones (+10 corazones por stack)",
+  "item.riskofrain_items.infusion.tooltip_total": "Total: hasta +%s corazones (%s en el inventario)",
 
   "item.riskofrain_items.lens_makers_glasses.tooltip_1": "Al golpear:",
   "item.riskofrain_items.lens_makers_glasses.tooltip_2": "6.25% (+6.25% por stack) de probabilidad de",
   "item.riskofrain_items.lens_makers_glasses.tooltip_3": "infligir doble daño, hasta un maximo de 100%",
+  "item.riskofrain_items.lens_makers_glasses.tooltip_total": "Total: %s%% de probabilidad de crítico (%s en el inventario)",
 
   "item.riskofrain_items.repulsion_armor_plate.tooltip_1": "Al ser golpeado:",
   "item.riskofrain_items.repulsion_armor_plate.tooltip_2": "Reduce el daño recibido en 1 (+1 por stack)",
   "item.riskofrain_items.repulsion_armor_plate.tooltip_3": "No se puede reducir por debajo de 1",
+  "item.riskofrain_items.repulsion_armor_plate.tooltip_total": "Total: -%s de daño por golpe (%s en el inventario)",
 
   "item.riskofrain_items.rose_buckler.tooltip_1": "Al esprintar:",
   "item.riskofrain_items.rose_buckler.tooltip_2": "Gana 20% (+20% por stack) de resistencia",
   "item.riskofrain_items.rose_buckler.tooltip_3": "hasta un maximo de 80%",
+  "item.riskofrain_items.rose_buckler.tooltip_total": "Total: %s%% de resistencia (%s en el inventario)",
 
   "item.riskofrain_items.smart_shopper.tooltip_1": "Al matar:",
   "item.riskofrain_items.smart_shopper.tooltip_2": "4% (+4% por stack) de probabilidad",
   "item.riskofrain_items.smart_shopper.tooltip_3": "de que los enemigos suelten oro",
+  "item.riskofrain_items.smart_shopper.tooltip_total": "Total: %s%% de probabilidad (%s en el inventario)",
 
   "item.riskofrain_items.soldiers_syringe.tooltip_1": "Incrementa la velocidad de ataque y de minado",
   "item.riskofrain_items.soldiers_syringe.tooltip_2": "Cada 4 stacks: +10% velocidad de ataque y +20% velocidad para minar",
+  "item.riskofrain_items.soldiers_syringe.tooltip_total": "Total: +%s%% de ataque y +%s%% de minado (%s en el inventario)",
 
   "item.riskofrain_items.topaz_brooch.tooltip_1": "Al matar:",
   "item.riskofrain_items.topaz_brooch.tooltip_2": "Gana una barrera temporal de 2 corazones",
   "item.riskofrain_items.topaz_brooch.tooltip_3": "(+2 corazones por stack), hasta un maximo",
   "item.riskofrain_items.topaz_brooch.tooltip_4": "de la vida maxima del usuario",
+  "item.riskofrain_items.topaz_brooch.tooltip_total": "Total: barrera de %s corazones (%s en el inventario)",
 
   "item.riskofrain_items.tougher_times.tooltip_1": "Al ser golpeado:",
   "item.riskofrain_items.tougher_times.tooltip_2": "probabilidad de bloquear el daño en:",
   "item.riskofrain_items.tougher_times.tooltip_3": "(1 - 1 / (1 + 0.15 * stacks) - 0.01)",
+  "item.riskofrain_items.tougher_times.tooltip_total": "Total: %s%% de bloquear (%s en el inventario)",
 
   "item.riskofrain_items.ukulele.tooltip_1": "...y su musica era electrica."
 }

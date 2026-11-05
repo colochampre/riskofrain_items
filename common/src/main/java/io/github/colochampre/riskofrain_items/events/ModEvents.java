@@ -12,11 +12,11 @@ import io.github.colochampre.riskofrain_items.items.RoseBucklerItem;
 import io.github.colochampre.riskofrain_items.items.TougherTimesItem;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.utils.ItemUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,7 +27,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +90,7 @@ public class ModEvents {
     if (total == 0 || (double) entity.getHealth() < (double) entity.getMaxHealth() * 0.8D) {
       return amount;
     }
-    double damageMultiplier = 1.2D + 0.3D * (double) total;
+    double damageMultiplier = ItemFormulas.crowbarDamageMultiplier(total);
     double procVolume = Math.min(damageMultiplier / 10, 10);
     playSound(player, CrowbarItem.getProcSound(), (float) procVolume, 1.0F);
     return amount * (float) damageMultiplier;
@@ -102,26 +101,15 @@ public class ModEvents {
     if (player == null) {
       return amount;
     }
-    int total = 0;
-    int gold = 0;
-    Inventory inv = player.getInventory();
-    for (int i = 0; i < inv.getContainerSize(); ++i) {
-      ItemStack stack = inv.getItem(i);
-      if (stack.is(RoRItems.GOLDEN_GUN.get())) {
-        total += stack.getCount();
-      } else if (stack.is(Items.GOLD_INGOT)) {
-        gold += stack.getCount() * 9;
-      } else if (stack.is(Items.RAW_GOLD)) {
-        gold += stack.getCount() * 6;
-      } else if (stack.is(Items.GOLD_NUGGET)) {
-        gold += stack.getCount();
-      }
-    }
-    if (total == 0 || gold == 0) {
+    int total = ItemUtils.countItemStack(player, RoRItems.GOLDEN_GUN.get());
+    if (total == 0) {
       return amount;
     }
-    double neededGoldForMaxAmplifier = total > 9 ? 9 : (2304 / Math.pow(2, total)) * 2;
-    double damageAmplifier = gold > neededGoldForMaxAmplifier ? 40.0D : Mth.floor(gold * 40 / neededGoldForMaxAmplifier);
+    int gold = ItemUtils.countGold(player);
+    if (gold == 0) {
+      return amount;
+    }
+    double damageAmplifier = ItemFormulas.goldenGunBonusPercent(total, gold);
     playSound(player, GoldenGunItem.getProcSound(), 0.4F, 1.0F);
     return amount * ((float) damageAmplifier / 100 + 1);
   }
@@ -133,7 +121,7 @@ public class ModEvents {
     }
     int total = ItemUtils.countItemStack(player, RoRItems.INFUSION.get());
     AttributeInstance maxHealth = player.getAttribute(Attributes.MAX_HEALTH);
-    if (total == 0 || maxHealth == null || player.getMaxHealth() >= 20 + (total * 10 * 2)) {
+    if (total == 0 || maxHealth == null || player.getMaxHealth() >= 20 + ItemFormulas.infusionMaxBonus(total)) {
       return;
     }
     // Earlier versions added one more modifier on every kill. Fold them all into the single modifier kept now,
@@ -178,8 +166,7 @@ public class ModEvents {
       return amount;
     }
     int total = ItemUtils.countItemStack(player, RoRItems.LENS_MAKERS_GLASSES.get());
-    // 6.25% per glasses, so 16 of them always crit
-    if (total == 0 || !roll(player, 6.25D * (double) total)) {
+    if (total == 0 || !roll(player, ItemFormulas.lensMakersGlassesCritPercent(total))) {
       return amount;
     }
     playSound(player, RoRSounds.LENS_CRIT_PROC.get(), 0.4F, 1.0F);
@@ -197,7 +184,7 @@ public class ModEvents {
       return amount;
     }
     playSound(player, RepulsionArmorPlateItem.getProcSound(), 0.4F, randomPitch(player));
-    return Math.max(amount - total, 1.0F);
+    return Math.max(amount - ItemFormulas.repulsionArmorPlateReduction(total), 1.0F);
   }
 
   private static void roseBucklerProc(LivingEntity entity) {
@@ -218,7 +205,7 @@ public class ModEvents {
     }
     int total = ItemUtils.countItemStack(player, RoRItems.SMART_SHOPPER.get());
     int nuggets = entity.getExperienceReward();
-    if (total == 0 || nuggets <= 0 || !roll(player, 4.0D * (double) total)) {
+    if (total == 0 || nuggets <= 0 || !roll(player, ItemFormulas.smartShopperChancePercent(total))) {
       return;
     }
     Level level = player.level();
@@ -235,11 +222,7 @@ public class ModEvents {
     if (total == 0) {
       return;
     }
-    if (total * 4 <= player.getMaxHealth()) {
-      player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 160, total - 1, true, false));
-    } else {
-      player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 160, (int) player.getMaxHealth() / 4 - 1, true, false));
-    }
+    player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 160, ItemFormulas.topazBroochAmplifier(total, player.getMaxHealth()), true, false));
   }
 
   private static float tougherTimesProc(LivingEntity entity, float amount) {
@@ -248,8 +231,7 @@ public class ModEvents {
       return amount;
     }
     int total = ItemUtils.countItemStack(player, RoRItems.TOUGHER_TIMES.get());
-    double chance = (1.0D - 1.0D / (1.0D + 0.15D * (double) total) - 0.01D) * 100.0D;
-    if (total == 0 || !roll(player, chance)) {
+    if (total == 0 || !roll(player, ItemFormulas.tougherTimesBlockPercent(total))) {
       return amount;
     }
     playSound(player, TougherTimesItem.getProcSound(), 0.4F, 1.0F);

@@ -1,5 +1,6 @@
 package io.github.colochampre.riskofrain_items.items;
 
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +21,7 @@ public class SmartShopperItem extends Item {
     tooltip.add(Component.translatable("item.riskofrain_items.smart_shopper.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.smart_shopper.tooltip_2"));
     tooltip.add(Component.translatable("item.riskofrain_items.smart_shopper.tooltip_3"));
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.percent(ItemFormulas.smartShopperChancePercent(count))});
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 }

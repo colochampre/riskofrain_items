@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +80,23 @@ public class ItemUtils {
 
   public static boolean hasItemStack(Player player, Item item) {
     return countItemStack(player, item) > 0;
+  }
+
+  // Gold carried directly in the inventory, counted in nuggets, for Golden Gun
+  public static int countGold(Player player) {
+    int gold = 0;
+    Inventory inv = player.getInventory();
+    for (int i = 0; i < inv.getContainerSize(); ++i) {
+      ItemStack stack = inv.getItem(i);
+      if (stack.is(Items.GOLD_INGOT)) {
+        gold += stack.getCount() * 9;
+      } else if (stack.is(Items.RAW_GOLD)) {
+        gold += stack.getCount() * 6;
+      } else if (stack.is(Items.GOLD_NUGGET)) {
+        gold += stack.getCount();
+      }
+    }
+    return gold;
   }
 
   // Counts the whole inventory: main slots, armor slots and offhand

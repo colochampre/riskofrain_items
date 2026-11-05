@@ -2,6 +2,7 @@ package io.github.colochampre.riskofrain_items.events;
 
 import dev.architectury.event.events.common.TickEvent;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.utils.ItemUtils;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,7 +19,6 @@ import java.util.UUID;
  */
 public class PassiveItemEffects {
   private static final UUID GOAT_HOOF_SPEED_ID = UUID.fromString("6f0c3b8e-2d4a-4e7b-9f15-8a2c71d4e903");
-  private static final double GOAT_HOOF_SPEED_PER_HOOF = 0.14D;
 
   public static void init() {
     TickEvent.PLAYER_POST.register(PassiveItemEffects::onPlayerTick);
@@ -40,7 +40,7 @@ public class PassiveItemEffects {
       return;
     }
     int total = ItemUtils.countItemStack(player, RoRItems.GOAT_HOOF.get());
-    double bonus = player.isSprinting() ? GOAT_HOOF_SPEED_PER_HOOF * total : 0.0D;
+    double bonus = player.isSprinting() ? ItemFormulas.goatHoofSpeedBonus(total) : 0.0D;
     AttributeModifier current = speed.getModifier(GOAT_HOOF_SPEED_ID);
     if (current != null && current.getAmount() == bonus) {
       return;
@@ -58,7 +58,7 @@ public class PassiveItemEffects {
   private static void soldiersSyringe(Player player) {
     int total = ItemUtils.countItemStack(player, RoRItems.SOLDIERS_SYRINGE.get());
     if (total > 0) {
-      player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 2, total / 4, true, false));
+      player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 2, ItemFormulas.soldiersSyringeAmplifier(total), true, false));
     }
   }
 
@@ -66,7 +66,7 @@ public class PassiveItemEffects {
   private static void roseBuckler(Player player) {
     int total = ItemUtils.countItemStack(player, RoRItems.ROSE_BUCKLER.get());
     if (total > 0 && player.isSprinting()) {
-      player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2, Math.min(total - 1, 3), true, false));
+      player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2, ItemFormulas.roseBucklerAmplifier(total), true, false));
     }
   }
 }

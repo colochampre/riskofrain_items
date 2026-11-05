@@ -1,5 +1,6 @@
 package io.github.colochampre.riskofrain_items.items;
 
+import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -22,6 +23,7 @@ public class TougherTimesItem extends Item {
     tooltip.add(Component.translatable("item.riskofrain_items.tougher_times.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.tougher_times.tooltip_2"));
     tooltip.add(Component.translatable("item.riskofrain_items.tougher_times.tooltip_3"));
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.percent(ItemFormulas.tougherTimesBlockPercent(count))});
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 
