@@ -16,7 +16,7 @@ Test runner: none in the project. Checks are a javac compile of `common` (Gradle
 
 - [x] T1 S1 inline: formulas move to `ItemFormulas`, shared by effects and tooltips; one tooltip helper (`TotalTooltip`); total lines in en_us, es_es, es_mx. `52b1117`
 - [x] T2 S2,S3,S4,S5 inline: one-level container counting in `ItemUtils.countItemStack`, platform part through `@ExpectPlatform` (`ContainerContents`). Bustling Fungus moves to the player tick. Commit below.
-- [ ] T3 S1-S5 user: in-game test on Fabric and Forge.
+- [x] T3 S1-S5 user: in-game test on Fabric and Forge, plus Sophisticated Backpacks 3.26.19 on Forge.
 
 Risk: item 6 (no automated test covers tooltips or counting).
 
@@ -34,3 +34,4 @@ Risk: item 6 (no automated test covers tooltips or counting).
   - javac passes for `common` (29 classes), the Fabric `ContainerContentsImpl` against the common jars, and the Forge `ContainerContentsImpl` against the Forge 47.4.3 named jar.
   - Not run: Gradle build and servers (Loom needs the Mojang manifest, blocked on the work network); real container reading needs the in-game test.
 - L5: independent verifier (Sonnet), whole feature against `766a496`: S1-S5 met, no effect value changed. One blocker: T1 also changed the Spanish Goat Hoof `tooltip_1` from "Al correr:" to "Al esprintar:" unasked; reverted. Advisories: Fabric also counts top-level `Items` of modded containers; Forge backpacks that keep contents server-side may show a lower client total (as in L2).
+- L6 (2026-11-06), user: "Testeado. Funcionan los items dentro de backpacks y shulkers en el inventario del jugador, incluso distribuyendo los items entre ambos." The Forge dev run loads mod jars from the git-ignored `forge/libs` through `modLocalRuntime` (Sophisticated Backpacks 3.26.19, Sophisticated Core 1.5.29). Feature closed.
