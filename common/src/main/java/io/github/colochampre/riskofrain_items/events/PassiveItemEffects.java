@@ -24,7 +24,7 @@ import java.util.UUID;
  * the inventory, so one stack of 64 and 8 stacks of 8 give the same result.
  */
 public class PassiveItemEffects {
-  private static final UUID GOAT_HOOF_SPEED_ID = UUID.fromString("6f0c3b8e-2d4a-4e7b-9f15-8a2c71d4e903");
+  public static final UUID GOAT_HOOF_SPEED_ID = UUID.fromString("6f0c3b8e-2d4a-4e7b-9f15-8a2c71d4e903");
   private static final int FUNGUS_STILL_TICKS = 40;    // 2 seconds standing still before healing starts
   private static final int FUNGUS_HEAL_INTERVAL = 20;  // then heal once per second
 

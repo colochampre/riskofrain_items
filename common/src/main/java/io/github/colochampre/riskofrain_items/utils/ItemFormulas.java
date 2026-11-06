@@ -24,6 +24,9 @@ public final class ItemFormulas {
     return 0.14D * count;
   }
 
+  // The widest view Goat Hoof may add to the field of view, as much as Speed II; the speed itself has no cap
+  public static final double GOAT_HOOF_FOV_BONUS_CAP = 0.4D;
+
   // Bonus damage in percent, from the gold carried counted in nuggets
   public static double goldenGunBonusPercent(int count, int gold) {
     if (count == 0 || gold == 0) {
