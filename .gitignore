@@ -29,6 +29,9 @@ screenshots/
 .env
 local/
 
+# Local-only mod jars for the dev runs (forge/build.gradle modLocalRuntime)
+libs/
+
 # OS Specific
 .DS_Store
 .DS_Store?
