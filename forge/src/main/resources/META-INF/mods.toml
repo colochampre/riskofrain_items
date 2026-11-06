@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[47,48)"
+license = "MIT"
+
+[[mods]]
+modId = "riskofrain_items"
+version = "${version}"
+displayName = "Risk of Rain Items"
+authors = "Colo Champre"
+credits = "Thanks everyone who supports the effort and HOPOO GAMES for providing us with such a universe."
+description = '''This mod brings some content from the Risk of Rain universe into Minecraft!'''
+logoFile = "logo.png"
+
+[[dependencies.riskofrain_items]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,48)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.riskofrain_items]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.20.2)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.riskofrain_items]]
+    modId="architectury"
+    mandatory=true
+    versionRange="[9.2.14,10)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[extensions.riskofrain_items]]
+type = "forge:display_test"
+value = "MATCH_VERSION"

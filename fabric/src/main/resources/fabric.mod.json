@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "riskofrain_items",
+  "version": "${version}",
+  "name": "Risk of Rain Items",
+  "description": "This mod brings some content from the Risk of Rain universe into Minecraft!",
+  "authors": [
+    "Colo Champre"
+  ],
+  "contact": {
+    "homepage": "https://github.com/colochampre/riskofrain_items",
+    "sources": "https://github.com/colochampre/riskofrain_items",
+    "issues": "https://github.com/colochampre/riskofrain_items/issues"
+  },
+  "license": "MIT",
+  "icon": "logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.colochampre.riskofrain_items.fabric.RoRModFabric"
+    ]
+  },
+  "mixins": [
+    "riskofrain_items.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": "1.20.1",
+    "java": ">=17",
+    "architectury": ">=9.2.14 <10",
+    "fabric-api": "*"
+  }
+}

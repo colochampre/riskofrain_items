@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "io.github.colochampre.riskofrain_items.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "FieldOfViewMixin"
+  ],
+  "mixins": [
+    "ActuallyHurtMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
