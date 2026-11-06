@@ -18,7 +18,7 @@ Test runner: none in the project. Checks are `./gradlew build --offline`, dedica
 - [x] T3 S2,S4 inline: item effects in common, damage hook per platform. `cf510ca`
 - [x] T4 S2,S3,S4 inline: chest loot in common, replacing the Forge loot modifiers. `591bb72`
 - [x] T5 S1-S4 inline: build, server start on both loaders, loot check from the console.
-- [ ] T6 S4 user: in-game test on Fabric and Forge.
+- [x] T6 S4 user: in-game test on Fabric and Forge.
 
 Risk: item 6 (no automated test would catch a regression in the damage hook or the loot pools). Item 5 does not apply: the build copies the versions `riskofrain_mobs` already uses.
 
@@ -54,3 +54,4 @@ Risk: item 6 (no automated test would catch a regression in the damage hook or t
   - Uncommon share across runs: 315 of 1392 (22.6%, 2.4 sigma from 20%). The weights are exactly 32 of 160, and no single weight looks wrong, so this is treated as sampling noise, not proven.
   - Independent read-only verifier: S1-S4 met by reading, no blockers. It left T6 to confirm that Architectury's pickup and death hooks fire at the same moment on Fabric.
   - Offline run note: `architectury-transformer-5.2.91-agent.jar` sits in the Gradle cache under the Shedaniel repository, which this project does not declare, so `runServer --offline` fails with "No cached version available for offline mode". A temporary init script adding that repository worked. Online, Gradle downloads the agent by itself, so nothing changed in the project.
+- L5 (2026-11-06): T6 closed. The user tested the migration in game after its push ("Testeado en fabric y forge, todo ok"), and the later item fixes were tested on both loaders too. The release is set to 2.0.0 for CurseForge; the last published build was 1.0, Forge only.
