@@ -17,6 +17,7 @@ import io.github.colochampre.riskofrain_items.utils.ItemUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -60,7 +61,7 @@ public class ModEvents {
     amount = goldenGunProc(source, amount);
     amount = lensMakersGlassesProc(source, amount);
     amount = repulsionArmorPlateProc(entity, amount);
-    roseBucklerProc(entity);
+    amount = roseBucklerProc(entity, source, amount);
     return tougherTimesProc(entity, amount);
   }
 
@@ -187,15 +188,18 @@ public class ModEvents {
     return Math.max(amount - ItemFormulas.repulsionArmorPlateReduction(total), 1.0F);
   }
 
-  private static void roseBucklerProc(LivingEntity entity) {
+  // While sprinting, reduces the damage that gets through armor, unless the damage type ignores resistance
+  private static float roseBucklerProc(LivingEntity entity, DamageSource source, float amount) {
     Player player = serverPlayer(entity);
-    if (player == null || !player.isSprinting()) {
-      return;
+    if (player == null || !player.isSprinting() || source.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+      return amount;
     }
     int total = ItemUtils.countItemStack(player, RoRItems.ROSE_BUCKLER.get());
-    if (total > 0) {
-      playSound(player, RoseBucklerItem.getProcSound(), Math.min(0.4F * total, 8.0F), randomPitch(player));
+    if (total == 0) {
+      return amount;
     }
+    playSound(player, RoseBucklerItem.getProcSound(), Math.min(0.4F * total, 8.0F), randomPitch(player));
+    return amount * (float) ItemFormulas.roseBucklerDamageMultiplier(total);
   }
 
   private static void smartShopperProc(LivingEntity entity, DamageSource source) {

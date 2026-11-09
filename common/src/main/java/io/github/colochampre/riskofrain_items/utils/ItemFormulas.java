@@ -49,18 +49,18 @@ public final class ItemFormulas {
     return count;
   }
 
-  // Resistance level minus one, up to Resistance IV
-  public static int roseBucklerAmplifier(int count) {
-    return Math.min(count - 1, 3);
+  // Incoming damage multiplier while sprinting: each buckler is 30 armor on the Risk of Rain 2 curve, so it never reaches 100%
+  public static double roseBucklerDamageMultiplier(int count) {
+    return 100.0D / (100.0D + 30.0D * count);
   }
 
   public static double smartShopperChancePercent(int count) {
     return 4.0D * (double) count;
   }
 
-  // Haste level minus one, one level more for every 4 syringes
-  public static int soldiersSyringeAmplifier(int count) {
-    return count / 4;
+  // Attack speed, as a MULTIPLY_TOTAL amount
+  public static double soldiersSyringeAttackSpeedBonus(int count) {
+    return 0.15D * count;
   }
 
   // Absorption level minus one: each level is 2 hearts, up to the player's max health

@@ -21,10 +21,7 @@ public class SoldiersSyringeItem extends Item {
   public void appendHoverText(ItemStack itemstack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
     tooltip.add(Component.translatable("item.riskofrain_items.soldiers_syringe.tooltip_1"));
     tooltip.add(Component.translatable("item.riskofrain_items.soldiers_syringe.tooltip_2"));
-    TotalTooltip.append(tooltip, level, this, (player, count) -> {
-      int hasteLevel = ItemFormulas.soldiersSyringeAmplifier(count) + 1;
-      return new Object[]{10 * hasteLevel, 20 * hasteLevel};
-    });
+    TotalTooltip.append(tooltip, level, this, (player, count) -> new Object[]{TotalTooltip.number(ItemFormulas.soldiersSyringeAttackSpeedBonus(count) * 100.0D)});
     super.appendHoverText(itemstack, level, tooltip, flag);
   }
 }

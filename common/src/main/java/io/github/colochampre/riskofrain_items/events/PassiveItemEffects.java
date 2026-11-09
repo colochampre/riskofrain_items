@@ -6,8 +6,6 @@ import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
 import io.github.colochampre.riskofrain_items.utils.ItemFormulas;
 import io.github.colochampre.riskofrain_items.utils.ItemUtils;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,6 +23,7 @@ import java.util.UUID;
  */
 public class PassiveItemEffects {
   public static final UUID GOAT_HOOF_SPEED_ID = UUID.fromString("6f0c3b8e-2d4a-4e7b-9f15-8a2c71d4e903");
+  public static final UUID SOLDIERS_SYRINGE_ATTACK_SPEED_ID = UUID.fromString("1875e0cf-29b8-4945-afeb-64eb8b960126");
   private static final int FUNGUS_STILL_TICKS = 40;    // 2 seconds standing still before healing starts
   private static final int FUNGUS_HEAL_INTERVAL = 20;  // then heal once per second
 
@@ -43,7 +42,6 @@ public class PassiveItemEffects {
     bustlingFungus(player);
     goatHoof(player);
     soldiersSyringe(player);
-    roseBuckler(player);
   }
 
   // After standing still for 2 seconds, heal once per second
@@ -95,19 +93,24 @@ public class PassiveItemEffects {
     }
   }
 
-  // Haste, one level more for every 4 syringes
+  // +15% attack speed per syringe
   private static void soldiersSyringe(Player player) {
-    int total = ItemUtils.countItemStack(player, RoRItems.SOLDIERS_SYRINGE.get());
-    if (total > 0) {
-      player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 2, ItemFormulas.soldiersSyringeAmplifier(total), true, false));
+    AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
+    if (attackSpeed == null) {
+      return;
     }
-  }
-
-  // While sprinting: Resistance, one level per buckler up to Resistance IV
-  private static void roseBuckler(Player player) {
-    int total = ItemUtils.countItemStack(player, RoRItems.ROSE_BUCKLER.get());
-    if (total > 0 && player.isSprinting()) {
-      player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2, ItemFormulas.roseBucklerAmplifier(total), true, false));
+    int total = ItemUtils.countItemStack(player, RoRItems.SOLDIERS_SYRINGE.get());
+    double bonus = ItemFormulas.soldiersSyringeAttackSpeedBonus(total);
+    AttributeModifier current = attackSpeed.getModifier(SOLDIERS_SYRINGE_ATTACK_SPEED_ID);
+    if (current != null && current.getAmount() == bonus) {
+      return;
+    }
+    if (current != null) {
+      attackSpeed.removeModifier(SOLDIERS_SYRINGE_ATTACK_SPEED_ID);
+    }
+    if (bonus > 0) {
+      // Transient: never saved, so it cannot stay behind after the syringes are gone
+      attackSpeed.addTransientModifier(new AttributeModifier(SOLDIERS_SYRINGE_ATTACK_SPEED_ID, "Soldier's Syringe attack speed", bonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
   }
 

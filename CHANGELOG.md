@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Balance
+- **Soldier's Syringe:** +15% attack speed per syringe (was a Haste potion effect). It no longer speeds up mining.
+- **Rose Buckler:** while sprinting, reduces incoming damage using the Risk of Rain 2 armor curve (was a Resistance potion effect): 23.1% with 1, 37.5% with 2, 60% with 5, 75% with 10. It never reaches 100%. Damage that ignores resistance (like void or `/kill`) is not reduced.
+
 ## 2.0.0 - Minecraft 1.20.1 (Fabric & Forge)
 
 ### New
