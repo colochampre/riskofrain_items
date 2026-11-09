@@ -1,11 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Balance
-- **Soldier's Syringe:** +15% attack speed per syringe (was a Haste potion effect). It no longer speeds up mining.
-- **Rose Buckler:** while sprinting, reduces incoming damage using the Risk of Rain 2 armor curve (was a Resistance potion effect): 23.1% with 1, 37.5% with 2, 60% with 5, 75% with 10. It never reaches 100%. Damage that ignores resistance (like void or `/kill`) is not reduced.
-
 ## 2.0.0 - Minecraft 1.20.1 (Fabric & Forge)
 
 ### New
@@ -17,6 +11,8 @@
 ### Balance
 - **All items count your whole inventory.** One stack of 64 now works exactly like 8 stacks of 8.
 - **Goat Hoof:** +14% movement speed per hoof while sprinting (was a Speed potion effect).
+- **Soldier's Syringe:** +15% attack speed per syringe (was a Haste potion effect). It no longer speeds up mining.
+- **Rose Buckler:** while sprinting, reduces incoming damage using the Risk of Rain 2 armor curve (was a Resistance potion effect): 23.1% with 1, 37.5% with 2, 60% with 5, 75% with 10. It never reaches 100%. Damage that ignores resistance (like void or `/kill`) is not reduced.
 - **Bustling Fungus:** heals 5% of max health (+2.25% per extra fungus) every second after standing still for 2 seconds (was 5% +1%, capped at 10%, every 2 seconds after 4 seconds). Healing is no longer rounded down to whole points.
 - **Lens-Maker's Glasses:** 6.25% critical chance per item, matching the tooltip (it was only ~1.5% per item).
 - **Infusion:** the max health you earn is lost on death (it can be earned again). It is kept when leaving the End.
