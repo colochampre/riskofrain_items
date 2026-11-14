@@ -83,17 +83,17 @@ public class ModEvents {
   }
 
   private static float crowBarProc(LivingEntity entity, DamageSource source, float amount) {
-    Player player = serverPlayer(source.getEntity());
-    if (player == null) {
+    LivingEntity user = serverUser(source.getEntity());
+    if (user == null) {
       return amount;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.CROWBAR.get());
+    int total = ItemUtils.countItemStack(user, RoRItems.CROWBAR.get());
     if (total == 0 || (double) entity.getHealth() < (double) entity.getMaxHealth() * 0.8D) {
       return amount;
     }
     double damageMultiplier = ItemFormulas.crowbarDamageMultiplier(total);
     double procVolume = Math.min(damageMultiplier / 10, 10);
-    playSound(player, CrowbarItem.getProcSound(), (float) procVolume, 1.0F);
+    playSound(user, CrowbarItem.getProcSound(), (float) procVolume, 1.0F);
     return amount * (float) damageMultiplier;
   }
 
@@ -162,43 +162,47 @@ public class ModEvents {
   }
 
   private static float lensMakersGlassesProc(DamageSource source, float amount) {
-    Player player = serverPlayer(source.getEntity());
-    if (player == null) {
+    LivingEntity user = serverUser(source.getEntity());
+    if (user == null) {
       return amount;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.LENS_MAKERS_GLASSES.get());
-    if (total == 0 || !roll(player, ItemFormulas.lensMakersGlassesCritPercent(total))) {
+    int total = ItemUtils.countItemStack(user, RoRItems.LENS_MAKERS_GLASSES.get());
+    if (total == 0 || !roll(user, ItemFormulas.lensMakersGlassesCritPercent(total))) {
       return amount;
     }
-    playSound(player, RoRSounds.LENS_CRIT_PROC.get(), 0.4F, 1.0F);
+    playSound(user, RoRSounds.LENS_CRIT_PROC.get(), 0.4F, 1.0F);
     return amount * 2.0F;
   }
 
   private static float repulsionArmorPlateProc(LivingEntity entity, float amount) {
-    Player player = serverPlayer(entity);
-    if (player == null) {
+    LivingEntity user = serverUser(entity);
+    if (user == null) {
       return amount;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.REPULSION_ARMOR_PLATE.get());
+    int total = ItemUtils.countItemStack(user, RoRItems.REPULSION_ARMOR_PLATE.get());
     // A hit of 1 or less is already at the minimum, and reducing must never raise it
     if (total == 0 || amount <= 1.0F) {
       return amount;
     }
-    playSound(player, RepulsionArmorPlateItem.getProcSound(), 0.4F, randomPitch(player));
+    playSound(user, RepulsionArmorPlateItem.getProcSound(), 0.4F, randomPitch(user));
     return Math.max(amount - ItemFormulas.repulsionArmorPlateReduction(total), 1.0F);
   }
 
-  // While sprinting, reduces the damage that gets through armor, unless the damage type ignores resistance
+  // While sprinting (a player) or moving (a holder), reduces the damage that gets through armor, unless the damage type ignores resistance
   private static float roseBucklerProc(LivingEntity entity, DamageSource source, float amount) {
-    Player player = serverPlayer(entity);
-    if (player == null || !player.isSprinting() || source.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+    LivingEntity user = serverUser(entity);
+    if (user == null || source.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
       return amount;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.ROSE_BUCKLER.get());
+    boolean active = user instanceof Player player ? player.isSprinting() : PassiveItemEffects.isMoving(user);
+    if (!active) {
+      return amount;
+    }
+    int total = ItemUtils.countItemStack(user, RoRItems.ROSE_BUCKLER.get());
     if (total == 0) {
       return amount;
     }
-    playSound(player, RoseBucklerItem.getProcSound(), Math.min(0.4F * total, 8.0F), randomPitch(player));
+    playSound(user, RoseBucklerItem.getProcSound(), Math.min(0.4F * total, 8.0F), randomPitch(user));
     return amount * (float) ItemFormulas.roseBucklerDamageMultiplier(total);
   }
 
@@ -218,27 +222,27 @@ public class ModEvents {
   }
 
   private static void topazBroochProc(DamageSource source) {
-    Player player = serverPlayer(source.getEntity());
-    if (player == null) {
+    LivingEntity user = serverUser(source.getEntity());
+    if (user == null) {
       return;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.TOPAZ_BROOCH.get());
+    int total = ItemUtils.countItemStack(user, RoRItems.TOPAZ_BROOCH.get());
     if (total == 0) {
       return;
     }
-    player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 160, ItemFormulas.topazBroochAmplifier(total, player.getMaxHealth()), true, false));
+    user.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 160, ItemFormulas.topazBroochAmplifier(total, user.getMaxHealth()), true, false));
   }
 
   private static float tougherTimesProc(LivingEntity entity, float amount) {
-    Player player = serverPlayer(entity);
-    if (player == null) {
+    LivingEntity user = serverUser(entity);
+    if (user == null) {
       return amount;
     }
-    int total = ItemUtils.countItemStack(player, RoRItems.TOUGHER_TIMES.get());
-    if (total == 0 || !roll(player, ItemFormulas.tougherTimesBlockPercent(total))) {
+    int total = ItemUtils.countItemStack(user, RoRItems.TOUGHER_TIMES.get());
+    if (total == 0 || !roll(user, ItemFormulas.tougherTimesBlockPercent(total))) {
       return amount;
     }
-    playSound(player, TougherTimesItem.getProcSound(), 0.4F, 1.0F);
+    playSound(user, TougherTimesItem.getProcSound(), 0.4F, 1.0F);
     return 0;
   }
 
@@ -247,13 +251,22 @@ public class ModEvents {
     return entity instanceof Player player && !player.level().isClientSide() ? player : null;
   }
 
-  // True with the given chance, in percent
-  private static boolean roll(Player player, double percent) {
-    return player.getRandom().nextDouble() * 100.0D < percent;
+  // The entity whose items take effect: a player or an item holder, only on the server. The player-only items
+  // (Infusion, Golden Gun, Smart Shopper) keep using serverPlayer
+  private static @Nullable LivingEntity serverUser(@Nullable Entity entity) {
+    if (!(entity instanceof LivingEntity living) || living.level().isClientSide()) {
+      return null;
+    }
+    return living instanceof Player || ItemUtils.isItemHolder(living) ? living : null;
   }
 
-  private static float randomPitch(Player player) {
-    return 1.0F + (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
+  // True with the given chance, in percent
+  private static boolean roll(LivingEntity entity, double percent) {
+    return entity.getRandom().nextDouble() * 100.0D < percent;
+  }
+
+  private static float randomPitch(LivingEntity entity) {
+    return 1.0F + (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F;
   }
 
   private static void playSound(Entity at, SoundEvent sound, float volume, float pitch) {
