@@ -1,7 +1,15 @@
 package io.github.colochampre.riskofrain_items.utils;
 
+import io.github.colochampre.riskofrain_items.RoRMod;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -12,6 +20,9 @@ import java.util.List;
 import java.util.Random;
 
 public class ItemUtils {
+
+  // Non-player entities that may use the items they carry. Ships empty: other mods add their entities to it
+  public static final TagKey<EntityType<?>> ITEM_USERS = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(RoRMod.MOD_ID, "item_users"));
 
   private static final List<Item> commonItems = new ArrayList<>();
   private static final List<Item> uncommonItems = new ArrayList<>();
@@ -99,9 +110,37 @@ public class ItemUtils {
     return gold;
   }
 
-  // Counts the whole inventory (main slots, armor slots and offhand) and the containers sitting in it, such as
-  // shulker boxes or backpacks, but not containers inside those
-  public static int countItemStack(Player player, Item item) {
+  // A non-player entity that carries items in a vanilla inventory and is listed in the item_users tag
+  public static boolean isItemHolder(LivingEntity entity) {
+    // The cheap instanceof goes first: this runs every tick for every living entity
+    return !(entity instanceof Player) && entity instanceof InventoryCarrier && entity.getType().is(ITEM_USERS);
+  }
+
+  // A player counts the whole inventory (main slots, armor slots and offhand) and the containers sitting in it, such
+  // as shulker boxes or backpacks, but not containers inside those. A holder counts only its own inventory slots
+  public static int countItemStack(LivingEntity entity, Item item) {
+    if (entity instanceof Player player) {
+      return countPlayerItemStack(player, item);
+    }
+    if (isItemHolder(entity)) {
+      return countHolderItemStack((InventoryCarrier) entity, item);
+    }
+    return 0;
+  }
+
+  private static int countHolderItemStack(InventoryCarrier carrier, Item item) {
+    int total = 0;
+    Container inventory = carrier.getInventory();
+    for (int i = 0; i < inventory.getContainerSize(); ++i) {
+      ItemStack stack = inventory.getItem(i);
+      if (stack.is(item)) {
+        total += stack.getCount();
+      }
+    }
+    return total;
+  }
+
+  private static int countPlayerItemStack(Player player, Item item) {
     int total = 0;
     Inventory inv = player.getInventory();
     for (int i = 0; i < inv.getContainerSize(); ++i) {
