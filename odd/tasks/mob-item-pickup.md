@@ -20,8 +20,8 @@ User request (2026-11-14): "se podría hacer que los mobs de riskofrain_mobs ten
 
 ## Tasks
 
-- [ ] T1 S1-S3: `ItemUtils.countItemStack(LivingEntity, Item)` with the player and holder paths; `isItemHolder(LivingEntity)`; the two tag files.
-- [ ] T2 S4-S7: `ModEvents` and `PassiveItemEffects` take any `LivingEntity` that is a player or a holder (except the S4 and S6b items); holder tick hook through Architectury; moving check for holders (S6), sharing the per-entity position state with Bustling Fungus; state cleanup.
+- [x] T1 S1-S3 (`006e558`): `ItemUtils.countItemStack(LivingEntity, Item)` with the player and holder paths; `isItemHolder(LivingEntity)`; the two tag files.
+- [x] T2 S4-S7 (`aa23c29`): `ModEvents` and `PassiveItemEffects` take any `LivingEntity` that is a player or a holder (except the S4 and S6b items); holder tick hook through Architectury; moving check for holders (S6), sharing the per-entity position state with Bustling Fungus; state cleanup.
 - [ ] T3: build, both servers, and a console check: summon a vanilla `InventoryCarrier` (allay) added to the tag in a scratch data pack, give it items, confirm effects.
 - [ ] T4: user in-game test, together with the riskofrain_mobs side.
 
@@ -32,3 +32,4 @@ Risk: item 6 (no automated test covers effects).
 - L1 (2026-11-14), user: design agreed in conversation. Ground pickup only ("Por ahora solo que los puedan juntar del piso"); config lives in riskofrain_mobs: section "Item pickup", enemies on, drones off, 8 slots. "Artifact of Evolution" is reserved for a future spawn-with-items mode.
 - L2: findings before writing. All effects filter through `ModEvents.serverPlayer` and `PassiveItemEffects.onPlayerTick`; the damage hook already receives any `LivingEntity` (Forge `LivingDamageEvent`, Fabric mixin on `LivingEntity` and `Player`), so no new mixin is needed for damage.
 - L3 (2026-11-14), user resolved the sprint and syringe question (S6, S6b). Out of scope, for later in riskofrain_mobs: "Más adelante ajustamos además el momento en que se aplica el daño del hit de la animación".
+- L4 (2026-11-14), T1 and T2 done. Architectury 9.2.14 has no living tick event (TickEvent: server, level, player only), so holders tick through Forge `LivingTickEvent` and a Fabric mixin on `LivingEntity.tick` TAIL, both calling `PassiveItemEffects.onHolderTick`; players stay on `TickEvent.PLAYER_POST` and `isItemHolder` excludes them, so nobody ticks twice. `passive_items` lists the 12 items registered in `RoRItems` except the `small_chest_item` block item. State per UUID is shared by Fungus and the S6 moving check, cleared on death, player quit, when a holder carries none of the three items, and by a prune every 200 server ticks of entries unseen for 200 ticks (covers unload and removal, which fire no event). `./gradlew build` passes online.
