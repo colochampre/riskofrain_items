@@ -66,13 +66,19 @@ public class PassiveItemEffects {
     int fungus = ItemUtils.countItemStack(entity, RoRItems.BUSTLING_FUNGUS.get());
     int hoof = ItemUtils.countItemStack(entity, RoRItems.GOAT_HOOF.get());
     int buckler = ItemUtils.countItemStack(entity, RoRItems.ROSE_BUCKLER.get());
-    if (fungus + hoof + buckler == 0) {
+    // A dying holder still ticks through its death animation, after LIVING_DEATH dropped its state
+    if (fungus + hoof + buckler == 0 || !entity.isAlive()) {
       STATES.remove(entity.getUUID());
       goatHoof(entity, 0, false);
       return;
     }
     MotionState state = track(entity);
-    bustlingFungus(entity, state, fungus);
+    if (fungus > 0) {
+      bustlingFungus(entity, state, fungus);
+    } else {
+      // Without fungus the timer starts over, as for a player
+      state.stillTicks = 0;
+    }
     goatHoof(entity, hoof, state.moving);
   }
 
