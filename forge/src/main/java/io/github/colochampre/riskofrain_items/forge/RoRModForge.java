@@ -4,10 +4,12 @@ import dev.architectury.platform.forge.EventBuses;
 import io.github.colochampre.riskofrain_items.RoRMod;
 import io.github.colochampre.riskofrain_items.client.GoatHoofFov;
 import io.github.colochampre.riskofrain_items.events.ModEvents;
+import io.github.colochampre.riskofrain_items.events.PassiveItemEffects;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -21,6 +23,7 @@ public final class RoRModForge {
     RoRMod.init();
 
     MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingDamage);
+    MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingTick);
     if (FMLEnvironment.dist == Dist.CLIENT) {
       MinecraftForge.EVENT_BUS.addListener(RoRModForge::onComputeFov);
     }
@@ -28,6 +31,11 @@ public final class RoRModForge {
 
   private static void onComputeFov(ComputeFovModifierEvent event) {
     event.setNewFovModifier(GoatHoofFov.adjust(event.getPlayer(), event.getNewFovModifier()));
+  }
+
+  // Players are ticked through Architectury, so only the item holders get through the check inside
+  private static void onLivingTick(LivingEvent.LivingTickEvent event) {
+    PassiveItemEffects.onHolderTick(event.getEntity());
   }
 
   private static void onLivingDamage(LivingDamageEvent event) {
