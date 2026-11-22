@@ -1,6 +1,8 @@
 package io.github.colochampre.riskofrain_items.utils;
 
 import io.github.colochampre.riskofrain_items.RoRMod;
+import io.github.colochampre.riskofrain_items.carrier.CarriedItems;
+import io.github.colochampre.riskofrain_items.carrier.RoRItemCarrier;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -8,6 +10,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
@@ -110,10 +113,15 @@ public class ItemUtils {
     return gold;
   }
 
-  // A non-player entity that carries items in a vanilla inventory and is listed in the item_users tag
+  // A non-player entity that carries items in a vanilla inventory and is listed in the item_users tag, or a mob that
+  // picked up items through the carried inventory (see CarriedItems), whatever its current eligibility is
   public static boolean isItemHolder(LivingEntity entity) {
     // The cheap instanceof goes first: this runs every tick for every living entity
-    return !(entity instanceof Player) && entity instanceof InventoryCarrier && entity.getType().is(ITEM_USERS);
+    if (entity instanceof Player) {
+      return false;
+    }
+    return entity instanceof Mob mob && CarriedItems.hasItems(mob)
+            || entity instanceof InventoryCarrier && entity.getType().is(ITEM_USERS);
   }
 
   // A player counts the whole inventory (main slots, armor slots and offhand) and the containers sitting in it, such
@@ -122,10 +130,14 @@ public class ItemUtils {
     if (entity instanceof Player player) {
       return countPlayerItemStack(player, item);
     }
-    if (isItemHolder(entity)) {
-      return countHolderItemStack((InventoryCarrier) entity, item);
+    int total = 0;
+    if (entity instanceof Mob mob) {
+      total += CarriedItems.count(mob, item);
     }
-    return 0;
+    if (entity instanceof InventoryCarrier carrier && entity.getType().is(ITEM_USERS)) {
+      total += countHolderItemStack(carrier, item);
+    }
+    return total;
   }
 
   private static int countHolderItemStack(InventoryCarrier carrier, Item item) {

@@ -42,3 +42,6 @@ logoFile = "logo.png"
 [[extensions.riskofrain_items]]
 type = "forge:display_test"
 value = "MATCH_VERSION"
+
+[[mixins]]
+config = "riskofrain_items-common.mixins.json"

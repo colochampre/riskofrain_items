@@ -24,7 +24,8 @@
     ]
   },
   "mixins": [
-    "riskofrain_items.mixins.json"
+    "riskofrain_items.mixins.json",
+    "riskofrain_items-common.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.17.0",

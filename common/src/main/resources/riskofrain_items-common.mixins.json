@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "io.github.colochampre.riskofrain_items.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "mixins": [
+    "LivingEntityDropMixin",
+    "MobCarrierMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
