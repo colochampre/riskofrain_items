@@ -3,6 +3,7 @@ package io.github.colochampre.riskofrain_items.forge;
 import dev.architectury.platform.forge.EventBuses;
 import io.github.colochampre.riskofrain_items.RoRMod;
 import io.github.colochampre.riskofrain_items.client.GoatHoofFov;
+import io.github.colochampre.riskofrain_items.forge.config.ForgeConfigIntegration;
 import io.github.colochampre.riskofrain_items.events.ModEvents;
 import io.github.colochampre.riskofrain_items.events.PassiveItemEffects;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,6 +27,7 @@ public final class RoRModForge {
     MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingTick);
     if (FMLEnvironment.dist == Dist.CLIENT) {
       MinecraftForge.EVENT_BUS.addListener(RoRModForge::onComputeFov);
+      ForgeConfigIntegration.register();
     }
   }
 

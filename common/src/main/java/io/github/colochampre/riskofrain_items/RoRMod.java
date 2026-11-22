@@ -4,6 +4,7 @@ import io.github.colochampre.riskofrain_items.events.ModEvents;
 import io.github.colochampre.riskofrain_items.events.PassiveItemEffects;
 import io.github.colochampre.riskofrain_items.loot.ModLootTables;
 import io.github.colochampre.riskofrain_items.registry.RoRBlocks;
+import io.github.colochampre.riskofrain_items.registry.RoRConfigs;
 import io.github.colochampre.riskofrain_items.registry.RoRCreativeTabs;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import io.github.colochampre.riskofrain_items.registry.RoRPaintings;
@@ -18,6 +19,7 @@ public final class RoRMod {
   public static void init() {
     LOGGER.info("Initialized RoR Items");
 
+    RoRConfigs.init();
     RoRSounds.init();
     // Blocks go first: loading RoRBlocks adds the block items to RoRItems.ITEMS
     RoRBlocks.init();

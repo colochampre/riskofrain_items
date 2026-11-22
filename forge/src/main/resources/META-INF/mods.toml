@@ -32,6 +32,13 @@ logoFile = "logo.png"
     ordering="AFTER"
     side="BOTH"
 
+[[dependencies.riskofrain_items]]
+    modId="cloth_config"
+    mandatory=true
+    versionRange="[11.1.136,12)"
+    ordering="AFTER"
+    side="BOTH"
+
 [[extensions.riskofrain_items]]
 type = "forge:display_test"
 value = "MATCH_VERSION"
