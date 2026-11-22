@@ -1,0 +1,47 @@
+# Vanilla mob item pickup
+
+Objective: vanilla hostile mobs, tamed wolves and, optionally, mobs from other mods can pick up Risk of Rain items from the ground, gain their passive effects and show them above their heads, as the riskofrain_mobs mobs already do. Off by default.
+Branch: `1.20.1-vanilla-mob-item-pickup` from `1.20.1` (`0d62155`). Delivery: ask-on-risk. Push, PR and merge are the user's.
+Test runner: none in the project. Checks are `./gradlew build`, dedicated servers stopped through rcon, and the user's in-game test on Fabric and Forge.
+
+## Specs
+
+User request (2026-11-15): "Si se puede, que los mobs vanilla puedan juntar ror_items configurable false por defecto. Si hay alguno/s que se deba exceptuar, proponemelo". Follow-ups (2026-11-16): "los domesticables que ataquen y puedan juntar items del suelo, a menos que desaconsejes alguno. Por ejemplo lobos."; "Prefiero Cloth Config para mantener la consistencia con mobs"; "iría con la opción de no desaparecer y los iconos para mobs en esta lista"; mobs from other mods: "Una opción aparte, apagada por defecto".
+
+- S1: Who picks up, each group behind its own setting (S7):
+  - Vanilla hostile mobs (`Enemy`) except the excluded ones (S2).
+  - Tamed wolves. A wild wolf does not pick up. Other tameable mobs are left out: cats and parrots do not attack once tamed, horses, llamas and camels do not fight for the player, and foxes already carry one item in their mouth through their own logic.
+  - Mobs from other mods (entity type namespace other than `minecraft`): those that implement `Enemy`, plus any listed in `#riskofrain_items:pickup_allowed` (data-pack editable, for modded companions or neutral mobs; there is no generic way to tell whether a mob fights for the player). Not excluded (S2), not tagged as a boss by the loader convention tag (`c:bosses` on Fabric, `forge:bosses` on Forge, existence to verify in T3), and not a mob that already has its own inventory (`InventoryCarrier`, which covers the riskofrain_mobs mobs and their own pickup).
+- S2: Excluded mobs, through the entity type tag `#riskofrain_items:pickup_excluded` (data-pack editable, `"replace": false`), applied to every group: Creeper (an explosion discards the mob without drops, so the items would be lost), Ender Dragon, Wither, Warden and Elder Guardian (bosses; the Dragon also never walks over ground items), Ghast, Phantom and Vex (they fly or pass through walls and never reach ground items), Piglin (its own inventory and bartering would clash), Slime and Magma Cube (they split on death, so who keeps the items is unclear). Shulkers are not excluded: they never move, so they only pick up what lands on them. A modded mob that misbehaves (custom death without drops, AI that skips the vanilla step) is fixed by adding it to this tag.
+- S3: Pickup works as for the riskofrain_mobs mobs: only items in `#riskofrain_items:passive_items`, only while the mob's carried inventory can take the stack, stacks of the same item merge, and only while the `mobGriefing` game rule is true (as vanilla loot pickup). The ground scan runs on an interval, not every tick. It is separate from vanilla equipment pickup: a zombie still picks up armor and weapons as before, and Risk of Rain items never go to its hands or armor slots.
+- S4: The carried inventory has the configured number of slots (S7), is saved and loaded with the mob, and every carried item drops when the mob dies, whatever killed it. Lowering the slot setting never deletes items a mob already carries.
+- S5: Effects come from the existing holder logic (`ItemUtils.countItemStack`, `PassiveItemEffects.onHolderTick`): a carrier counts as a holder, with the same effects and exceptions as the riskofrain_mobs mobs (Infusion, Golden Gun, Smart Shopper and Soldier's Syringe do nothing on mobs; Goat Hoof and Rose Buckler trigger while moving).
+- S6: With the setting on (default), a mob carrying at least one item never despawns, so its items are not lost. Balance risk: with many zombies carriers can pile up; turning the setting off lets them despawn with their items. Tamed wolves never despawn anyway.
+- S7: Configuration with Cloth Config (AutoConfig) and a Mod Menu entry, as in riskofrain_mobs; riskofrain_items gains the Cloth Config dependency. Settings and defaults:
+  - Vanilla hostile mobs pick up items: false.
+  - Tamed wolves pick up items: false.
+  - Mobs from other mods pick up items: false.
+  - Carried slots: 8 (1-27).
+  - Carriers never despawn: true.
+  - Show carried items: true.
+  - Render distance: 16 blocks (1-64).
+  - Display mode: when looking at the mob (as in riskofrain_mobs).
+- S8: Icons above the head for every carrier of S1, with the same look and settings as the riskofrain_mobs display (including the brightness fix). The carried items are synced to the client for the icons. Drawn from a hook common to every entity, after it renders, so modded mobs with their own renderers (GeckoLib and similar) show icons too. Client-only code, nothing loads on a dedicated server. Moving the riskofrain_mobs display into riskofrain_items is backlog item 3b, not this slice, but this code is written so it can take over that display later.
+- S9: The changelog gets an "Unreleased" section with the user-facing entries, as in riskofrain_mobs.
+
+## Tasks
+
+- [ ] T1 S7: Cloth Config and Mod Menu dependencies (Fabric and Forge), the config class with the eight settings, labels and tooltips, Mod Menu and Forge config screen entries.
+- [ ] T2 S3-S6: carried inventory on `Mob` through mixins (pickup scan in the AI step, save and load, death drop, despawn rule) and holder counting for these carriers.
+- [ ] T3 S1-S2: eligibility (the three settings, `Enemy`, tamed wolf, namespace, `InventoryCarrier`), tags `pickup_excluded` and `pickup_allowed`, boss convention tags verified on both loaders.
+- [ ] T4 S8: client sync of the carried items and the icon rendering hook.
+- [ ] T5 S9: changelog "Unreleased" section and entries.
+- [ ] T6: build, both dedicated servers, and an rcon check with the settings on: a zombie picks up a dropped Risk of Rain item and keeps its armor pickup, a creeper does not pick up, a tamed wolf does, a wild one does not, the zombie drops the item on death, a damaged zombie with Bustling Fungus heals; with the settings off nothing is picked up.
+- [ ] T7: user in-game test on Fabric and Forge, including icons on vanilla mobs and, if available, a mob from another mod.
+
+Risk: item 6 (no automated test covers pickup, persistence, effects or rendering).
+
+## Log
+
+- L1 (2026-11-16), findings before writing: `ItemUtils.isItemHolder` accepts only `InventoryCarrier` entities in `#riskofrain_items:item_users` (the riskofrain_mobs mobs), so these carriers need their own holder path. Vanilla loot pickup in `Mob.aiStep` is gated by the mob's `canPickUpLoot` flag (only some zombies and skeletons get it, at random) and goes into equipment slots, so the Risk of Rain pickup is a separate scan.
+- L2 (2026-11-16), decisions: Cloth Config for consistency with riskofrain_mobs; "carriers never despawn" becomes a setting, on by default; icons above the head enter this slice; mobs from other mods behind a separate setting, off by default, through the same `Mob` mixin, with an opt-in tag for non-hostile ones and boss convention tags excluded.
