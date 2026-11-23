@@ -6,8 +6,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -203,6 +207,31 @@ public final class CarriedItems {
         inventory.setItem(slot++, stack);
       }
     }
+  }
+
+  /**
+   * The owner of a tamed mob takes back everything it carries: the stacks go to the player's inventory and what does
+   * not fit drops at the player's feet. Server side only. Returns false, changing nothing, when the mob is not owned,
+   * the player is not its owner or the mob carries nothing, so the normal interaction can go on. Ownerless mobs (iron
+   * golems, wild mobs) never give anything back.
+   */
+  public static boolean takeAll(Mob mob, Player player) {
+    CarriedInventory inventory = inventory(mob);
+    if (mob.level().isClientSide || inventory == null || inventory.isEmpty()) {
+      return false;
+    }
+    if (!(mob instanceof OwnableEntity ownable) || !player.getUUID().equals(ownable.getOwnerUUID())) {
+      return false;
+    }
+    for (ItemStack stack : inventory.removeAllItems()) {
+      // Inventory.add leaves the part that did not fit in the stack
+      if (!player.getInventory().add(stack)) {
+        player.drop(stack, false);
+      }
+    }
+    mob.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP,
+            SoundSource.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+    return true;
   }
 
   public static void dropAll(Mob mob) {
