@@ -19,7 +19,7 @@ User decisions (2026-11-16, 2026-11-23): "Si tomasemos la decision de unificarlo
 - [x] T2 S3: icon height on scaled renderers. Commit `a25e722`.
 - [x] T3 S4: changelog. Commit `9580fdf`.
 - [x] T4: build and both dedicated servers start (L2).
-- [ ] T5: user in-game test together with the riskofrain_mobs task (its T7).
+- [x] T5: user in-game test together with the riskofrain_mobs task (its T7, passed on Forge and Fabric 2026-11-23; the Wisp fire overlay height is handled by riskofrain_mobs through its render scale, no change here).
 
 Risk: item 6 (no automated tests).
 
