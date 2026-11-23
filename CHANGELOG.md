@@ -9,6 +9,7 @@
 - **Carried items above the head.** Carriers show the icons of their items, with counts, within a configurable distance.
 - **Data-pack tags.** `riskofrain_items:pickup_excluded` removes mobs from every group; `riskofrain_items:pickup_allowed` lets other-mod mobs pick up items even if they are not hostile.
 - **Config screen** (Cloth Config) through Mod Menu on Fabric and the mods list on Forge: groups, carried slots, no-despawn, and icon display.
+- **Carrier API for other mods.** Other mods can register their own carrier rules so their mobs pick up items, and a render scale for mobs whose renderer scales the model so the icons sit right above them.
 
 ### Changed
 - **Cloth Config is now a required dependency** on both Fabric and Forge.
