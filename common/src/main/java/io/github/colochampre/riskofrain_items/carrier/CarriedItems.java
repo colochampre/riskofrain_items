@@ -107,12 +107,17 @@ public final class CarriedItems {
   // nothing, and one that goes from some items to none sends the empty summary once
   static void onInventoryChanged(Mob mob) {
     // Loading can run on the entity deserializer worker thread, where ChunkMap's tracking data is not safe to read.
-    // Start tracking sends the initial state, so skipping here loses nothing (syncedSummary stays as it was)
-    if (mob.level().isClientSide || mob.level().getServer() == null || !mob.level().getServer().isSameThread()) {
+    // Start tracking sends the initial state, so nothing is sent here, but syncedSummary still records the real
+    // contents: otherwise a later change back to the last sent state would look like no change and skip the clear
+    if (mob.level().isClientSide || mob.level().getServer() == null) {
       return;
     }
     CarriedInventory inventory = inventory(mob);
     if (inventory == null) {
+      return;
+    }
+    if (!mob.level().getServer().isSameThread()) {
+      inventory.syncedSummary = summarize(inventory);
       return;
     }
     List<Entry> summary = summarize(inventory);
