@@ -14,6 +14,11 @@ public abstract class ClientLevelMixin {
 
   @Inject(method = "removeEntity", at = @At("HEAD"))
   private void riskofrain_items$forgetCarriedItems(int entityId, Entity.RemovalReason reason, CallbackInfo ci) {
-    CarriedItemsClient.remove(entityId);
+    // ClientLevel.addEntity calls removeEntity first, for an id that is not there yet. On Fabric the carried items
+    // packet arrives before the entity (EntityTrackingEvents.START_TRACKING fires at the head of addPairing), so
+    // only a removal of an entity that exists may forget its items
+    if (((ClientLevel) (Object) this).getEntity(entityId) != null) {
+      CarriedItemsClient.remove(entityId);
+    }
   }
 }
