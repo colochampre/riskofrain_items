@@ -25,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
+
 // Gives every Mob a carried Risk of Rain inventory (created on the first pickup) and wires pickup, persistence and
 // despawn. The death drop lives in LivingEntityDropMixin because the drop method belongs to LivingEntity
 @Mixin(Mob.class)
@@ -33,6 +35,13 @@ public abstract class MobCarrierMixin extends LivingEntity implements RoRItemCar
   @Unique
   @Nullable
   private CarriedInventory riskofrain_items$carried;
+
+  // The last take-back, to recognize the off-hand pass that follows it (server only, never saved)
+  @Unique
+  private long riskofrain_items$takenTick = Long.MIN_VALUE / 2;
+  @Unique
+  @Nullable
+  private UUID riskofrain_items$takenBy;
 
   @Shadow
   protected abstract Vec3i getPickupReach();
@@ -68,11 +77,31 @@ public abstract class MobCarrierMixin extends LivingEntity implements RoRItemCar
   // vanilla check for the sneak-modified use of an item or block (it is isShiftKeyDown on Player, overridable by mods).
   // interact is final in Mob, so no subclass can skip this, and it runs before mobInteract (the wolf does not sit).
   // The client falls through to vanilla: only the server knows the carried items, and its success result swings the arm
+  // A modded OwnableEntity may return PASS on the client for the main hand, and then the client also sends the
+  // off-hand interaction, which would run the vanilla logic (a wolf sitting). The off-hand pass right after a
+  // take-back by the same player is consumed without acting, so only the main-hand pass acts, once
   @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
   private void riskofrain_items$giveItemsBack(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-    if (hand == InteractionHand.MAIN_HAND && player.isSecondaryUseActive() && player.getMainHandItem().isEmpty()
-            && CarriedItems.takeAll((Mob) (Object) this, player)) {
-      cir.setReturnValue(InteractionResult.sidedSuccess(this.level().isClientSide));
+    if (!player.isSecondaryUseActive() || !player.getMainHandItem().isEmpty()) {
+      return;
+    }
+    if (hand == InteractionHand.MAIN_HAND) {
+      if (CarriedItems.takeAll((Mob) (Object) this, player)) {
+        this.riskofrain_items$takenTick = this.level().getGameTime();
+        this.riskofrain_items$takenBy = player.getUUID();
+        cir.setReturnValue(InteractionResult.sidedSuccess(this.level().isClientSide));
+      }
+    } else if (!this.level().isClientSide && player.getUUID().equals(this.riskofrain_items$takenBy)
+            && this.level().getGameTime() - this.riskofrain_items$takenTick <= 1) {
+      cir.setReturnValue(InteractionResult.CONSUME);
+    }
+  }
+
+  @Inject(method = "convertTo", at = @At("RETURN"))
+  private void riskofrain_items$keepItemsOnConversion(EntityType<?> type, boolean keepEquipment, CallbackInfoReturnable<Mob> cir) {
+    Mob converted = cir.getReturnValue();
+    if (converted != null) {
+      CarriedItems.transfer((Mob) (Object) this, converted);
     }
   }
 

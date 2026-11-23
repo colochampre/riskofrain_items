@@ -106,7 +106,9 @@ public final class CarriedItems {
   // to the players tracking the mob when it differs from the last one sent. A mob that never carried anything sends
   // nothing, and one that goes from some items to none sends the empty summary once
   static void onInventoryChanged(Mob mob) {
-    if (mob.level().isClientSide) {
+    // Loading can run on the entity deserializer worker thread, where ChunkMap's tracking data is not safe to read.
+    // Start tracking sends the initial state, so skipping here loses nothing (syncedSummary stays as it was)
+    if (mob.level().isClientSide || mob.level().getServer() == null || !mob.level().getServer().isSameThread()) {
       return;
     }
     CarriedInventory inventory = inventory(mob);
@@ -261,6 +263,28 @@ public final class CarriedItems {
     }
     if (!stack.isEmpty()) {
       player.drop(stack, false);
+    }
+  }
+
+  /**
+   * A mob converts into another one (Mob.convertTo copies equipment and then discards the old mob without dying, so
+   * its carried items would be deleted). The items move to the new mob if it can carry, up to its capacity, and what
+   * does not fit, or everything if the new mob cannot carry, drops at the old mob's position. The old inventory ends
+   * empty, so nothing is duplicated.
+   */
+  public static void transfer(Mob from, Mob to) {
+    CarriedInventory source = inventory(from);
+    if (from.level().isClientSide || source == null || source.isEmpty()) {
+      return;
+    }
+    boolean accepts = CarrierEligibility.canCarry(to);
+    for (ItemStack stack : source.removeAllItems()) {
+      ItemStack rest = accepts
+              ? ((RoRItemCarrier) to).riskofrain_items$getOrCreateCarriedInventory().addItem(stack)
+              : stack;
+      if (!rest.isEmpty()) {
+        from.spawnAtLocation(rest);
+      }
     }
   }
 
