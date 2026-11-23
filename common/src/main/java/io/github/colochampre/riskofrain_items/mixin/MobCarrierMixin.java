@@ -100,8 +100,15 @@ public abstract class MobCarrierMixin extends LivingEntity implements RoRItemCar
   @Inject(method = "convertTo", at = @At("RETURN"))
   private void riskofrain_items$keepItemsOnConversion(EntityType<?> type, boolean keepEquipment, CallbackInfoReturnable<Mob> cir) {
     Mob converted = cir.getReturnValue();
-    if (converted != null) {
+    if (converted == null) {
+      return;
+    }
+    // Mob.convertTo ignores the result of addFreshEntity, so a cancelled spawn returns a mob that is not in the level
+    // (isRemoved() is false for it): the items would vanish with it, so they drop at the old mob instead
+    if (converted.level().getEntity(converted.getId()) == converted) {
       CarriedItems.transfer((Mob) (Object) this, converted);
+    } else {
+      CarriedItems.dropAll((Mob) (Object) this);
     }
   }
 
