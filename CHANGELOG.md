@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased - Minecraft 1.20.1 (Fabric & Forge)
+
+### New
+- **Mobs pick up Risk of Rain items.** Mobs can pick up Risk of Rain items from the ground and gain their passive effects. Four groups, each behind its own setting and all off by default: vanilla hostile mobs, tamed wolves, neutral creatures (wild wolves, polar bears, iron golems and neutral mobs from other mods) and hostile mobs from other mods. Creepers, bosses and mobs that fly or split are excluded.
+- **Carried items drop on death.** Optionally, mobs carrying items never despawn, so the items are not lost.
+- **Carried items above the head.** Carriers show the icons of their items, with counts, within a configurable distance.
+- **Data-pack tags.** `riskofrain_items:pickup_excluded` removes mobs from every group; `riskofrain_items:pickup_allowed` lets other-mod mobs pick up items even if they are not hostile.
+- **Config screen** (Cloth Config) through Mod Menu on Fabric and the mods list on Forge: groups, carried slots, no-despawn, and icon display.
+
+### Changed
+- **Cloth Config is now a required dependency** on both Fabric and Forge.
+
 ## 2.0.0 - Minecraft 1.20.1 (Fabric & Forge)
 
 ### New
