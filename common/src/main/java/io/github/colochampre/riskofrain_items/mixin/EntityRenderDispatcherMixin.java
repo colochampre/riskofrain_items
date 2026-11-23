@@ -1,6 +1,7 @@
 package io.github.colochampre.riskofrain_items.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.colochampre.riskofrain_items.client.CarriedItemsDisplay;
 import io.github.colochampre.riskofrain_items.client.CarriedItemsRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -25,6 +26,6 @@ public abstract class EntityRenderDispatcherMixin {
     }
     boolean nameShown = ((EntityRendererInvoker) ((EntityRenderDispatcher) (Object) this).getRenderer(entity))
             .riskofrain_items$shouldShowName(entity);
-    CarriedItemsRenderer.render(entity, nameShown, 1.0F, poseStack, buffer);
+    CarriedItemsRenderer.render(entity, nameShown, CarriedItemsDisplay.renderScale(entity), poseStack, buffer);
   }
 }

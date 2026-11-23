@@ -137,7 +137,7 @@ public final class CarriedItems {
   // Called at the end of the mob's AI step on the server. The reach is Mob.getPickupReach, protected, so the mixin
   // passes it in: the scan uses the same area as the vanilla loot pickup in Mob.aiStep
   public static void tick(Mob mob, Vec3i reach) {
-    // Cheapest checks first: with every group off nothing is scanned
+    // Cheapest checks first: with every group off and no registered rule nothing is scanned
     if (!CarrierEligibility.anyGroupEnabled() || (mob.tickCount + mob.getId()) % PICKUP_INTERVAL != 0
             || !mob.isAlive() || mob.isDeadOrDying()) {
       return;
@@ -295,6 +295,11 @@ public final class CarriedItems {
     }
   }
 
+  /**
+   * Drops everything the mob carries at its position. The death drop already does this; call it from a mod whose
+   * mobs leave the world without dying (a drone breaking down, a turret picked up as an item) before removing the
+   * mob, or the carried items are lost. Does nothing on the client.
+   */
   public static void dropAll(Mob mob) {
     CarriedInventory inventory = inventory(mob);
     if (mob.level().isClientSide || inventory == null) {
