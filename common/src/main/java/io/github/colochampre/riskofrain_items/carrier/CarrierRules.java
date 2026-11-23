@@ -1,10 +1,5 @@
 package io.github.colochampre.riskofrain_items.carrier;
 
-import io.github.colochampre.riskofrain_items.RoRMod;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.world.entity.EntityType;
@@ -23,7 +18,7 @@ import net.minecraft.world.entity.Mob;
  * Call {@link #register} once per type from your mod initializer. The type is a {@link Supplier}, resolved the first
  * time a mob is checked (after registries are populated), so it is safe to call during mod init on Forge, before your
  * entity types exist, and before or after riskofrain_items has initialized. A type must be registered only once; a
- * duplicate is logged and ignored when the suppliers are resolved.
+ * supplier that throws or returns null at that point, or a duplicate type, is logged and ignored.
  * <p>
  * The rule runs on the server thread, for the mob that scans for items, once per pickup scan (every few ticks per
  * mob), so it must be cheap and must not modify the world. Example, with a mod that wants its tamed drones to carry
@@ -41,13 +36,7 @@ import net.minecraft.world.entity.Mob;
  */
 public final class CarrierRules {
 
-  private static final Map<EntityType<?>, Predicate<Mob>> RULES = new ConcurrentHashMap<>();
-  private static final List<Pending> PENDING = new ArrayList<>();
-  private static volatile boolean pendingResolved = true;
-  private static volatile boolean anyRegistered;
-
-  private record Pending(Supplier<? extends EntityType<?>> type, Predicate<Mob> rule) {
-  }
+  private static final LazyTypeMap<Predicate<Mob>> RULES = new LazyTypeMap<>("carrier rule");
 
   private CarrierRules() {
   }
@@ -62,47 +51,16 @@ public final class CarrierRules {
    * @throws IllegalArgumentException if an argument is null
    */
   public static void register(Supplier<? extends EntityType<?>> type, Predicate<Mob> rule) {
-    if (type == null || rule == null) {
-      throw new IllegalArgumentException("type and rule must not be null");
-    }
-    synchronized (PENDING) {
-      PENDING.add(new Pending(type, rule));
-      anyRegistered = true;
-      pendingResolved = false;
-    }
-  }
-
-  private static void resolvePending() {
-    synchronized (PENDING) {
-      for (Pending pending : PENDING) {
-        EntityType<?> type;
-        try {
-          type = pending.type().get();
-        } catch (RuntimeException e) {
-          RoRMod.LOGGER.error("Could not resolve the entity type of a carrier rule; it is ignored", e);
-          continue;
-        }
-        if (type == null) {
-          RoRMod.LOGGER.error("A carrier rule supplied a null entity type; it is ignored");
-        } else if (RULES.putIfAbsent(type, pending.rule()) != null) {
-          RoRMod.LOGGER.error("Carrier rule already registered for {}; the duplicate is ignored", type);
-        }
-      }
-      PENDING.clear();
-      pendingResolved = true;
-    }
+    RULES.register(type, rule);
   }
 
   /** The rule registered for the type, or {@code null} when the type follows the default rules. */
   static Predicate<Mob> get(EntityType<?> type) {
-    if (!pendingResolved) {
-      resolvePending();
-    }
     return RULES.get(type);
   }
 
   /** Whether any mod registered a rule; the pickup scan must run for those types even with every group off. */
   static boolean hasAny() {
-    return anyRegistered;
+    return RULES.hasAny();
   }
 }
