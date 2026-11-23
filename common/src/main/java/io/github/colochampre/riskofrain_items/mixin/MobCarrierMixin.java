@@ -2,6 +2,7 @@ package io.github.colochampre.riskofrain_items.mixin;
 
 import io.github.colochampre.riskofrain_items.carrier.CarriedInventory;
 import io.github.colochampre.riskofrain_items.carrier.CarriedItems;
+import io.github.colochampre.riskofrain_items.carrier.CarrierEligibility;
 import io.github.colochampre.riskofrain_items.carrier.RoRItemCarrier;
 import io.github.colochampre.riskofrain_items.registry.RoRConfigs;
 import net.minecraft.core.Vec3i;
@@ -10,6 +11,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // Gives every Mob a carried Risk of Rain inventory (created on the first pickup) and wires pickup, persistence and
 // despawn. The death drop lives in LivingEntityDropMixin because the drop method belongs to LivingEntity
@@ -56,6 +59,15 @@ public abstract class MobCarrierMixin extends LivingEntity implements RoRItemCar
   @Inject(method = "serverAiStep", at = @At("TAIL"))
   private void riskofrain_items$pickUpCarriedItems(CallbackInfo ci) {
     CarriedItems.tick((Mob) (Object) this, this.getPickupReach());
+  }
+
+  // Vanilla loot pickup (mobs with CanPickUpLoot) would put a Risk of Rain item in a hand slot before the carrier scan
+  // gets to it, so carriers refuse these stacks there and only the carrier scan takes them
+  @Inject(method = "wantsToPickUp", at = @At("HEAD"), cancellable = true)
+  private void riskofrain_items$leavePassiveItemsToTheCarrier(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    if (stack.is(CarriedItems.PASSIVE_ITEMS) && CarrierEligibility.canCarry((Mob) (Object) this)) {
+      cir.setReturnValue(false);
+    }
   }
 
   @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
