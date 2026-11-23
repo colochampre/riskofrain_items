@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -224,14 +225,43 @@ public final class CarriedItems {
       return false;
     }
     for (ItemStack stack : inventory.removeAllItems()) {
-      // Inventory.add leaves the part that did not fit in the stack
-      if (!player.getInventory().add(stack)) {
-        player.drop(stack, false);
-      }
+      giveOrDrop(player, stack);
     }
     mob.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP,
             SoundSource.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
     return true;
+  }
+
+  // Not Inventory.add: it returns true when only part of the stack fit (the rest stays in the stack), and for a
+  // creative player with no room it empties the stack and returns true. Both ways delete items. This fills the
+  // matching stacks first, then the free slots, and drops whatever is left
+  private static void giveOrDrop(Player player, ItemStack stack) {
+    Inventory inventory = player.getInventory();
+    while (!stack.isEmpty()) {
+      int slot = inventory.getSlotWithRemainingSpace(stack);
+      if (slot >= 0) {
+        ItemStack target = inventory.getItem(slot);
+        int moved = Math.min(stack.getCount(), Math.min(target.getMaxStackSize(), inventory.getMaxStackSize()) - target.getCount());
+        if (moved <= 0) {
+          break;
+        }
+        target.grow(moved);
+        target.setPopTime(5);
+        stack.shrink(moved);
+        continue;
+      }
+      slot = inventory.getFreeSlot();
+      if (slot < 0) {
+        break;
+      }
+      ItemStack placed = stack.copy();
+      placed.setPopTime(5);
+      inventory.setItem(slot, placed);
+      stack.setCount(0);
+    }
+    if (!stack.isEmpty()) {
+      player.drop(stack, false);
+    }
   }
 
   public static void dropAll(Mob mob) {
