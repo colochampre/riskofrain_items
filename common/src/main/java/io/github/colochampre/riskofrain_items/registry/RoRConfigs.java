@@ -21,6 +21,7 @@ public class RoRConfigs implements ConfigData {
   public boolean VANILLA_HOSTILE_MOBS_PICK_UP = false;
   public boolean TAMED_WOLVES_PICK_UP = false;
   public boolean MODDED_MOBS_PICK_UP = false;
+  public boolean NEUTRAL_MOBS_PICK_UP = false;
 
   @ConfigEntry.BoundedDiscrete(min = 1, max = 27)
   public int CARRIED_SLOTS = 8;
