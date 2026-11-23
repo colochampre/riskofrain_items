@@ -132,7 +132,9 @@ public final class CarriedItems {
   // Called at the end of the mob's AI step on the server. The reach is Mob.getPickupReach, protected, so the mixin
   // passes it in: the scan uses the same area as the vanilla loot pickup in Mob.aiStep
   public static void tick(Mob mob, Vec3i reach) {
-    if ((mob.tickCount + mob.getId()) % PICKUP_INTERVAL != 0 || !mob.isAlive() || mob.isDeadOrDying()) {
+    // Cheapest checks first: with every group off nothing is scanned
+    if (!CarrierEligibility.anyGroupEnabled() || (mob.tickCount + mob.getId()) % PICKUP_INTERVAL != 0
+            || !mob.isAlive() || mob.isDeadOrDying()) {
       return;
     }
     if (!mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) || !CarrierEligibility.canCarry(mob)) {

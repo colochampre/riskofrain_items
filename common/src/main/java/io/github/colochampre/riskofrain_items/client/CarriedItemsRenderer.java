@@ -58,8 +58,13 @@ public final class CarriedItemsRenderer {
   private CarriedItemsRenderer() {
   }
 
+  /** Whether the entity has icons to draw at all (a map lookup), so callers can skip the rest of the work. */
+  public static boolean hasIcons(Entity entity) {
+    return !CarriedItemsClient.get(entity).isEmpty();
+  }
+
   /**
-   * @param nameShown   whether the renderer is drawing the entity's name tag, so the rows go above it
+   * @param nameShown  whether the renderer is drawing the entity's name tag, so the rows go above it
    * @param renderScale scale the renderer applied to the model and name tag, 1 when it applies none
    */
   public static void render(Entity entity, boolean nameShown, float renderScale, PoseStack poseStack, MultiBufferSource buffer) {

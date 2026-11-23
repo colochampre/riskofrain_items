@@ -19,6 +19,10 @@ public abstract class EntityRenderDispatcherMixin {
           target = "Lnet/minecraft/client/renderer/entity/EntityRenderer;render(Lnet/minecraft/world/entity/Entity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
   private void riskofrain_items$renderCarriedItems(Entity entity, double x, double y, double z, float yaw, float partialTicks,
                                                    PoseStack poseStack, MultiBufferSource buffer, int light, CallbackInfo ci) {
+    // Cheap early out: almost no entity carries anything, so the renderer lookup and the name test wait for the ones that do
+    if (!CarriedItemsRenderer.hasIcons(entity)) {
+      return;
+    }
     boolean nameShown = ((EntityRendererInvoker) ((EntityRenderDispatcher) (Object) this).getRenderer(entity))
             .riskofrain_items$shouldShowName(entity);
     CarriedItemsRenderer.render(entity, nameShown, 1.0F, poseStack, buffer);

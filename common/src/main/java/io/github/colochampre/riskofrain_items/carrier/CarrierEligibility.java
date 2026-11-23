@@ -45,6 +45,13 @@ public final class CarrierEligibility {
     return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(namespace, path));
   }
 
+  /** Whether any group is switched on; with all of them off no mob needs to be checked at all. */
+  public static boolean anyGroupEnabled() {
+    RoRConfigs config = RoRConfigs.get();
+    return config.VANILLA_HOSTILE_MOBS_PICK_UP || config.TAMED_WOLVES_PICK_UP || config.MODDED_MOBS_PICK_UP
+            || config.NEUTRAL_MOBS_PICK_UP;
+  }
+
   public static boolean canCarry(Mob mob) {
     // Mobs with their own inventory (the riskofrain_mobs mobs, piglins, villagers...) keep their own logic
     if (mob instanceof InventoryCarrier) {
