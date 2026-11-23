@@ -2,6 +2,7 @@ package io.github.colochampre.riskofrain_items.carrier;
 
 import io.github.colochampre.riskofrain_items.RoRMod;
 import io.github.colochampre.riskofrain_items.registry.RoRConfigs;
+import java.util.function.Predicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,8 @@ import net.minecraft.world.entity.npc.InventoryCarrier;
 /**
  * Single place that decides which mobs can pick up Risk of Rain items.
  * <ul>
+ *   <li>Entity types registered through {@link CarrierRules} are decided by their mod's rule alone, right after
+ *   {@code pickup_excluded}, ignoring everything below.</li>
  *   <li>{@code #riskofrain_items:pickup_excluded} removes a mob type from every group.</li>
  *   <li>{@code #riskofrain_items:pickup_allowed} opts in non-hostile mobs from other mods (the vanilla groups
  *   ignore it).</li>
@@ -46,20 +49,25 @@ public final class CarrierEligibility {
     return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(namespace, path));
   }
 
-  /** Whether any group is switched on; with all of them off no mob needs to be checked at all. */
+  /** Whether any group is switched on or a mod registered a rule; with neither no mob needs to be checked at all. */
   public static boolean anyGroupEnabled() {
     RoRConfigs config = RoRConfigs.get();
-    return config.VANILLA_HOSTILE_MOBS_PICK_UP || config.PETS_PICK_UP || config.MODDED_MOBS_PICK_UP
+    return CarrierRules.hasAny() || config.VANILLA_HOSTILE_MOBS_PICK_UP || config.PETS_PICK_UP || config.MODDED_MOBS_PICK_UP
             || config.NEUTRAL_MOBS_PICK_UP;
   }
 
   public static boolean canCarry(Mob mob) {
-    // Mobs with their own inventory (the riskofrain_mobs mobs, piglins, villagers...) keep their own logic
-    if (mob instanceof InventoryCarrier) {
-      return false;
-    }
     EntityType<?> type = mob.getType();
     if (type.is(PICKUP_EXCLUDED)) {
+      return false;
+    }
+    // A rule registered by another mod decides alone (see CarrierRules)
+    Predicate<Mob> rule = CarrierRules.get(type);
+    if (rule != null) {
+      return rule.test(mob);
+    }
+    // Mobs with their own inventory (the riskofrain_mobs mobs, piglins, villagers...) keep their own logic
+    if (mob instanceof InventoryCarrier) {
       return false;
     }
     RoRConfigs config = RoRConfigs.get();
