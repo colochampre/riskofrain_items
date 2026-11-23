@@ -4,6 +4,8 @@ import io.github.colochampre.riskofrain_items.registry.RoRConfigs;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
 /**
  * The Risk of Rain items a mob carries. The container always has {@link #MAX_SLOTS} slots (the largest value of the
  * slots setting), but only as many stacks as the setting allows are accepted: the limit is read when an item is
@@ -12,6 +14,9 @@ import net.minecraft.world.item.ItemStack;
 public class CarriedInventory extends SimpleContainer {
 
   public static final int MAX_SLOTS = 27;
+
+  // The summary last sent to the clients, to skip updates that change nothing (see CarriedItems.onInventoryChanged)
+  List<CarriedItems.Entry> syncedSummary = List.of();
 
   public CarriedInventory() {
     super(MAX_SLOTS);

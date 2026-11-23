@@ -16,7 +16,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Public entry point for the Risk of Rain items carried by vanilla and modded mobs (everything that passes
@@ -77,9 +79,41 @@ public final class CarriedItems {
     return total;
   }
 
-  // The one place that runs after every change of any carried inventory (pickup, load, drop). T4 sends the sync
-  // packet to the players tracking the mob from here
+  /** One distinct item and its total count across the carried stacks. */
+  public record Entry(Item item, int count) {
+  }
+
+  /** Total count per distinct item, in the order each item first appears. */
+  static List<Entry> summarize(CarriedInventory inventory) {
+    Map<Item, Integer> totals = new LinkedHashMap<>();
+    for (int i = 0; i < inventory.getContainerSize(); i++) {
+      ItemStack stack = inventory.getItem(i);
+      if (!stack.isEmpty()) {
+        totals.merge(stack.getItem(), stack.getCount(), Integer::sum);
+      }
+    }
+    List<Entry> summary = new ArrayList<>(totals.size());
+    totals.forEach((item, count) -> summary.add(new Entry(item, count)));
+    return summary;
+  }
+
+  // The one place that runs after every change of any carried inventory (pickup, load, drop): it syncs the summary
+  // to the players tracking the mob when it differs from the last one sent. A mob that never carried anything sends
+  // nothing, and one that goes from some items to none sends the empty summary once
   static void onInventoryChanged(Mob mob) {
+    if (mob.level().isClientSide) {
+      return;
+    }
+    CarriedInventory inventory = inventory(mob);
+    if (inventory == null) {
+      return;
+    }
+    List<Entry> summary = summarize(inventory);
+    if (summary.equals(inventory.syncedSummary)) {
+      return;
+    }
+    inventory.syncedSummary = summary;
+    CarrierSync.sendToTrackers(mob, summary);
   }
 
   public static CarriedInventory createInventory(Mob mob) {

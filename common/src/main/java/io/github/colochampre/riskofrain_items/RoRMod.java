@@ -9,6 +9,9 @@ import io.github.colochampre.riskofrain_items.registry.RoRCreativeTabs;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import io.github.colochampre.riskofrain_items.registry.RoRPaintings;
 import io.github.colochampre.riskofrain_items.registry.RoRSounds;
+import dev.architectury.utils.Env;
+import dev.architectury.utils.EnvExecutor;
+import io.github.colochampre.riskofrain_items.client.CarriedItemsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,5 +32,7 @@ public final class RoRMod {
     ModEvents.init();
     PassiveItemEffects.init();
     ModLootTables.init();
+    // The packet receiver and the client store only exist on the client
+    EnvExecutor.runInEnv(Env.CLIENT, () -> CarriedItemsClient::init);
   }
 }
