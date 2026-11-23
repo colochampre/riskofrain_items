@@ -75,7 +75,8 @@ public final class LazyTypeMap<V> {
         EntityType<?> type;
         try {
           type = entry.type().get();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
+          // LinkageError: a supplier touching a class of a missing optional mod must not take the rest of the batch.
           RoRMod.LOGGER.error("Could not resolve the entity type of a {}; it is ignored", what, e);
           continue;
         }
