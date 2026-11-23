@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:creeper",
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:warden",
+    "minecraft:elder_guardian",
+    "minecraft:ghast",
+    "minecraft:phantom",
+    "minecraft:vex",
+    "minecraft:piglin",
+    "minecraft:slime",
+    "minecraft:magma_cube"
+  ]
+}
