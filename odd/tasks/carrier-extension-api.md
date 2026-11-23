@@ -15,7 +15,7 @@ User decisions (2026-11-16, 2026-11-23): "Si tomasemos la decision de unificarlo
 
 ## Tasks
 
-- [ ] T1 S1-S2: the registration point in `carrier/`, used first in `CarrierEligibility.canCarry`; Javadoc for mod authors.
+- [x] T1 S1-S2: the registration point in `carrier/`, used first in `CarrierEligibility.canCarry`; Javadoc for mod authors. Commit `231ca99`.
 - [ ] T2 S3: icon height on scaled renderers.
 - [ ] T3 S4: changelog.
 - [ ] T4: build and both dedicated servers start.
@@ -24,3 +24,4 @@ User decisions (2026-11-16, 2026-11-23): "Si tomasemos la decision de unificarlo
 Risk: item 6 (no automated tests).
 
 ## Log
+- L1 (2026-11-23), T1 done in `231ca99`. API: `CarrierRules.register(EntityType<?> type, Predicate<Mob> rule)` in `carrier/CarrierRules.java`, backed by a `ConcurrentHashMap`; registering a type twice throws `IllegalStateException`, null arguments throw `IllegalArgumentException`. Called once from the mod initializer on the main thread; nothing is read until mobs tick, so the order against riskofrain_items' own init does not matter. `CarrierEligibility.canCarry` order is now: `pickup_excluded` (a data pack can always turn a mob off), then the registered rule alone (over the `InventoryCarrier` exclusion, the four groups, boss tags and `pickup_allowed`), then the unchanged default rules. `anyGroupEnabled()` also returns true when a rule is registered (`CarrierRules.hasAny()`, an `isEmpty` check), so `CarriedItems.tick` scans registered mobs even with all groups off; it still runs `canCarry` per mob, so unregistered mobs fall back to the group settings there. `CarriedItems.dropAll(Mob)` stays public, now with Javadoc for mobs that leave the world without dying. Counting: `ItemUtils.countItemStack` adds `CarriedItems.count` and, separately, the `InventoryCarrier` inventory when the type is in `#item_users`; the carried inventory and the vanilla inventory are different containers, so a registered mob that is both is summed, not double counted, and `isItemHolder` is an OR; no change needed. Not covered: a rule returning false later does not drop what the mob already carries (it keeps it). Checks: `./gradlew build` passes.
