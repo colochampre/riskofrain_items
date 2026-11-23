@@ -2,14 +2,18 @@ package io.github.colochampre.riskofrain_items.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import io.github.colochampre.riskofrain_items.RoRMod;
+import io.github.colochampre.riskofrain_items.carrier.CarrierSync;
 import io.github.colochampre.riskofrain_items.client.GoatHoofFov;
+import io.github.colochampre.riskofrain_items.forge.config.ForgeConfigIntegration;
 import io.github.colochampre.riskofrain_items.events.ModEvents;
 import io.github.colochampre.riskofrain_items.events.PassiveItemEffects;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -24,8 +28,16 @@ public final class RoRModForge {
 
     MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingDamage);
     MinecraftForge.EVENT_BUS.addListener(RoRModForge::onLivingTick);
+    MinecraftForge.EVENT_BUS.addListener(RoRModForge::onStartTracking);
     if (FMLEnvironment.dist == Dist.CLIENT) {
       MinecraftForge.EVENT_BUS.addListener(RoRModForge::onComputeFov);
+      ForgeConfigIntegration.register();
+    }
+  }
+
+  private static void onStartTracking(PlayerEvent.StartTracking event) {
+    if (event.getEntity() instanceof ServerPlayer player) {
+      CarrierSync.onStartTracking(event.getTarget(), player);
     }
   }
 

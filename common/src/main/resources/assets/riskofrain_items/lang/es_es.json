@@ -78,5 +78,26 @@
   "item.riskofrain_items.tougher_times.tooltip_3": "(1 - 1 / (1 + 0.15 * stacks) - 0.01)",
   "item.riskofrain_items.tougher_times.tooltip_total": "Total: %s%% de bloquear (%s en el inventario)",
 
-  "item.riskofrain_items.ukulele.tooltip_1": "...y su musica era electrica."
+  "item.riskofrain_items.ukulele.tooltip_1": "...y su musica era electrica.",
+
+  "text.autoconfig.riskofrain_items.title": "Configuración de Risk of Rain Items",
+  "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP": "Los Mobs Hostiles de Vanilla Recogen Objetos",
+  "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP.@Tooltip": "Los mobs hostiles de vanilla recogen objetos de Risk of Rain del suelo y obtienen sus efectos pasivos. Los objetos que llevan se sueltan al morir.",
+  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP": "Las Mascotas Recogen Objetos",
+  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP.@Tooltip": "Los mobs domesticados que tienen dueño, como los lobos, de este mod o de otros, recogen objetos de Risk of Rain del suelo. Las mascotas que no pelean (gatos, loros, caballos, llamas y camellos) quedan fuera. Los lobos salvajes usan el ajuste de criaturas neutrales.",
+  "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP": "Los Mobs de Otros Mods Recogen Objetos",
+  "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP.@Tooltip": "Los mobs hostiles de otros mods, y los incluidos en la etiqueta pickup_allowed, recogen objetos de Risk of Rain. Los mods que gestionan su propio inventario pueden comportarse de otra forma.",
+  "text.autoconfig.riskofrain_items.option.NEUTRAL_MOBS_PICK_UP": "Las Criaturas Neutrales Recogen Objetos",
+  "text.autoconfig.riskofrain_items.option.NEUTRAL_MOBS_PICK_UP.@Tooltip": "Las criaturas neutrales, como los lobos salvajes, los osos polares y los golems de hierro, recogen objetos de Risk of Rain del suelo. Incluye mobs neutrales de otros mods. Los mobs domesticados usan el ajuste de mascotas.",
+  "text.autoconfig.riskofrain_items.option.CARRIED_SLOTS": "Espacios para Llevar",
+  "text.autoconfig.riskofrain_items.option.CARRIED_SLOTS.@Tooltip": "Cuántas pilas de objetos distintas puede llevar un mob. Reducirlo nunca quita los objetos que un mob ya lleva.",
+  "text.autoconfig.riskofrain_items.option.CARRIERS_NEVER_DESPAWN": "Los Portadores Nunca Desaparecen",
+  "text.autoconfig.riskofrain_items.option.CARRIERS_NEVER_DESPAWN.@Tooltip": "Un mob que lleva al menos un objeto nunca desaparece, así no se pierden sus objetos. Desactívalo si se acumulan los portadores.",
+  "text.autoconfig.riskofrain_items.option.SHOW_CARRIED_ITEMS": "Mostrar Objetos Llevados",
+  "text.autoconfig.riskofrain_items.option.SHOW_CARRIED_ITEMS.@Tooltip": "Muestra los objetos llevados como iconos sobre el mob. Ajuste del cliente.",
+  "text.autoconfig.riskofrain_items.option.DISPLAY_DISTANCE": "Distancia de Visualización de Objetos Llevados",
+  "text.autoconfig.riskofrain_items.option.DISPLAY_DISTANCE.@Tooltip": "Distancia máxima en bloques a la que se muestran los iconos de los objetos llevados.",
+  "text.autoconfig.riskofrain_items.option.DISPLAY_MODE": "Modo de Visualización de Objetos Llevados",
+  "text.autoconfig.riskofrain_items.option.DISPLAY_MODE.ALWAYS": "Siempre",
+  "text.autoconfig.riskofrain_items.option.DISPLAY_MODE.WHEN_LOOKING": "Al Mirar"
 }
