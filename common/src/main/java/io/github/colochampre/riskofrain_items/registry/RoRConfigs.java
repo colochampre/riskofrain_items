@@ -19,7 +19,7 @@ public class RoRConfigs implements ConfigData {
 
   // Which mobs pick up Risk of Rain items from the ground
   public boolean VANILLA_HOSTILE_MOBS_PICK_UP = false;
-  public boolean TAMED_WOLVES_PICK_UP = false;
+  public boolean PETS_PICK_UP = false;
   public boolean MODDED_MOBS_PICK_UP = false;
   public boolean NEUTRAL_MOBS_PICK_UP = false;
 

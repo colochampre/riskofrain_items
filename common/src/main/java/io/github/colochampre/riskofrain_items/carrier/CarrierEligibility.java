@@ -9,7 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 
@@ -26,7 +26,8 @@ import net.minecraft.world.entity.npc.InventoryCarrier;
  *   other mods' neutral mobs) have their own switch, in every namespace. That switch governs them everywhere, so a
  *   modded neutral mob is eligible with it even if the other-mods switch is off; the other-mods switch only governs
  *   modded {@code Enemy} mobs and mobs in {@code pickup_allowed}. Boss convention tags still exclude non-vanilla
- *   mobs. A tamed wolf uses the tamed-wolves switch only.</li>
+ *   mobs. A mob with an owner ({@link OwnableEntity} whose owner UUID is set) is a pet and uses the pets switch
+ *   only, in every namespace; pets that do not fight are left out through {@code pickup_excluded}.</li>
  * </ul>
  */
 public final class CarrierEligibility {
@@ -48,7 +49,7 @@ public final class CarrierEligibility {
   /** Whether any group is switched on; with all of them off no mob needs to be checked at all. */
   public static boolean anyGroupEnabled() {
     RoRConfigs config = RoRConfigs.get();
-    return config.VANILLA_HOSTILE_MOBS_PICK_UP || config.TAMED_WOLVES_PICK_UP || config.MODDED_MOBS_PICK_UP
+    return config.VANILLA_HOSTILE_MOBS_PICK_UP || config.PETS_PICK_UP || config.MODDED_MOBS_PICK_UP
             || config.NEUTRAL_MOBS_PICK_UP;
   }
 
@@ -62,10 +63,9 @@ public final class CarrierEligibility {
       return false;
     }
     RoRConfigs config = RoRConfigs.get();
-    // Exact type: a modded subclass of Wolf has another type and is not covered by the wolves setting.
-    // A tamed wolf is never eligible through the neutral group
-    if (type == EntityType.WOLF && ((TamableAnimal) mob).isTame()) {
-      return config.TAMED_WOLVES_PICK_UP;
+    // A mob with an owner (tamed, vanilla or modded) is governed by the pets setting only, never by the other groups
+    if (mob instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null) {
+      return config.PETS_PICK_UP;
     }
     boolean vanilla = VANILLA_NAMESPACE.equals(BuiltInRegistries.ENTITY_TYPE.getKey(type).getNamespace());
     if (vanilla) {
