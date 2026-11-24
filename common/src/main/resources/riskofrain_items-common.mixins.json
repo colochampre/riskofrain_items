@@ -9,6 +9,7 @@
     "EntityRendererInvoker"
   ],
   "mixins": [
+    "AbstractHorseAccessor",
     "ChunkMapAccessor",
     "LivingEntityDropMixin",
     "MobCarrierMixin",
