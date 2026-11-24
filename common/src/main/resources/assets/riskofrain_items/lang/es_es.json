@@ -84,7 +84,7 @@
   "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP": "Los Mobs Hostiles de Vanilla Recogen Objetos",
   "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP.@Tooltip": "Los mobs hostiles de vanilla recogen objetos de Risk of Rain del suelo y obtienen sus efectos pasivos. Los objetos que llevan se sueltan al morir.",
   "text.autoconfig.riskofrain_items.option.PETS_PICK_UP": "Las Mascotas Recogen Objetos",
-  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP.@Tooltip": "Los mobs domesticados que tienen dueño, como los lobos, de este mod o de otros, recogen objetos de Risk of Rain del suelo. Incluye caballos, camellos, gatos y loros. Los burros, las mulas y las llamas no recogen: cuentan los objetos de Risk of Rain de su cofre. Los lobos salvajes usan el ajuste de criaturas neutrales.",
+  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP.@Tooltip": "Los mobs domesticados que tienen dueño, como los lobos, de este mod o de otros, recogen objetos de Risk of Rain del suelo. Incluye caballos (también esqueleto y zombi), camellos, gatos y loros. Los burros, las mulas y las llamas no recogen: cuentan los objetos de Risk of Rain de su cofre. Los lobos salvajes usan el ajuste de criaturas neutrales.",
   "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP": "Los Mobs de Otros Mods Recogen Objetos",
   "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP.@Tooltip": "Los mobs hostiles de otros mods, y los incluidos en la etiqueta pickup_allowed, recogen objetos de Risk of Rain. Los mods que gestionan su propio inventario pueden comportarse de otra forma.",
   "text.autoconfig.riskofrain_items.option.NEUTRAL_MOBS_PICK_UP": "Las Criaturas Neutrales Recogen Objetos",

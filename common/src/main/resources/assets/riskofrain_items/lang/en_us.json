@@ -85,7 +85,7 @@
   "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP": "Vanilla Hostile Mobs Pick Up Items",
   "text.autoconfig.riskofrain_items.option.VANILLA_HOSTILE_MOBS_PICK_UP.@Tooltip": "Vanilla hostile mobs pick up Risk of Rain items from the ground and gain their passive effects. Carried items drop on death.",
   "text.autoconfig.riskofrain_items.option.PETS_PICK_UP": "Pets Pick Up Items",
-  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP.@Tooltip": "Tamed mobs that have an owner, such as wolves, from this mod or others, pick up Risk of Rain items from the ground. This includes horses, camels, cats and parrots. Donkeys, mules and llamas do not pick up: the Risk of Rain items in their chest count instead. Wild wolves use the neutral creatures setting.",
+  "text.autoconfig.riskofrain_items.option.PETS_PICK_UP.@Tooltip": "Tamed mobs that have an owner, such as wolves, from this mod or others, pick up Risk of Rain items from the ground. This includes horses (also skeleton and zombie horses), camels, cats and parrots. Donkeys, mules and llamas do not pick up: the Risk of Rain items in their chest count instead. Wild wolves use the neutral creatures setting.",
   "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP": "Mobs From Other Mods Pick Up Items",
   "text.autoconfig.riskofrain_items.option.MODDED_MOBS_PICK_UP.@Tooltip": "Hostile mobs from other mods, and those listed in the pickup_allowed tag, pick up Risk of Rain items. Mods that handle their own inventories may behave differently.",
   "text.autoconfig.riskofrain_items.option.NEUTRAL_MOBS_PICK_UP": "Neutral Creatures Pick Up Items",

@@ -20,7 +20,7 @@ User decisions (2026-11-23): "Luego voy a querer que otros mobs domesticables pu
 - [x] T2 S3: count the chest of tamed chested horses for holder effects, with no cap; keep them out of the pickup scan.
 - [x] T3 S5: changelog (the unreleased pickup entry updated in place) and the `PETS_PICK_UP` tooltip in en_us, es_es and es_mx.
 - [x] T4: build and both dedicated servers (rcon checks: a tamed horse picks up, a mule's chest counts). Done within T1 and T2 (L1, L2).
-- [ ] T5: fresh review.
+- [x] T5: fresh review (L3).
 - [ ] T6: user in-game test on Fabric and Forge.
 
 Risk: item 6 (no automated tests).
@@ -41,3 +41,4 @@ Risk: item 6 (no automated tests).
   - NBT: 1.20.1 chest slots are `Slot:2b` to `Slot:16b` (the full container index; `Slot:0b` is ignored, it is the saddle slot).
   - Servers (rcon), Fabric and Forge, `PETS_PICK_UP` on (restored to false after): after 8 damage, an owned mule and an owned llama with a Bustling Fungus in the chest healed back to full (53); an owned mule without the item, an ownerless tamed mule with it and an owned mule with the item but no `ChestedHorse` stayed at vanilla regen values. With the setting off the owned mule and llama with the item did not heal. An owned chested mule did not pick up a crowbar from the ground (no `CarriedItems`, item still there). Test entities removed and chunks unforced. `./gradlew build` passes.
   - Left for T6: in-game check of the chest UI with real items, a mule with Goat Hoof under a rider, and that the effect stops when the owner removes the item.
+- L3 (2026-11-23), T3 and T5. T3: the unreleased pickup entry of the changelog and the `PETS_PICK_UP` tooltip (en_us, es_es, es_mx) now list the new pets, skeleton and zombie horses included, and say that donkeys, mules and llamas count their chest instead. T5 fresh review: no HIGH or MEDIUM findings. LOW and accepted: no data-pack switch for the chest count (`PETS_PICK_UP` is the switch, L2); a chested horse made a carrier by a data pack or another mod's rule would add both sources, which are different containers, so nothing is counted twice; an owned chested horse with an empty chest still runs the cheap holder tick. LOW fixed: the wording missed skeleton and zombie horses.
