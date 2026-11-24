@@ -1,15 +1,11 @@
 package io.github.colochampre.riskofrain_items.client;
 
-import io.github.colochampre.riskofrain_items.RoRMod;
+import io.github.colochampre.riskofrain_items.carrier.LazyTypeMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 
@@ -22,12 +18,7 @@ import java.util.function.ToDoubleFunction;
 @Environment(EnvType.CLIENT)
 public final class CarriedItemsDisplay {
 
-  private static final Map<EntityType<?>, ToDoubleFunction<Entity>> RENDER_SCALES = new ConcurrentHashMap<>();
-  private static final List<Pending> PENDING = new ArrayList<>();
-  private static volatile boolean pendingResolved = true;
-
-  private record Pending(Supplier<? extends EntityType<?>> type, ToDoubleFunction<Entity> scale) {
-  }
+  private static final LazyTypeMap<ToDoubleFunction<Entity>> RENDER_SCALES = new LazyTypeMap<>("render scale");
 
   private CarriedItemsDisplay() {
   }
@@ -44,41 +35,11 @@ public final class CarriedItemsDisplay {
    * @throws IllegalArgumentException if an argument is null
    */
   public static void registerRenderScale(Supplier<? extends EntityType<?>> type, ToDoubleFunction<Entity> scale) {
-    if (type == null || scale == null) {
-      throw new IllegalArgumentException("type and scale must not be null");
-    }
-    synchronized (PENDING) {
-      PENDING.add(new Pending(type, scale));
-      pendingResolved = false;
-    }
-  }
-
-  private static void resolvePending() {
-    synchronized (PENDING) {
-      for (Pending pending : PENDING) {
-        EntityType<?> type;
-        try {
-          type = pending.type().get();
-        } catch (RuntimeException e) {
-          RoRMod.LOGGER.error("Could not resolve the entity type of a render scale; it is ignored", e);
-          continue;
-        }
-        if (type == null) {
-          RoRMod.LOGGER.error("A render scale supplied a null entity type; it is ignored");
-        } else if (RENDER_SCALES.putIfAbsent(type, pending.scale()) != null) {
-          RoRMod.LOGGER.error("A render scale is already registered for {}; the duplicate is ignored", type);
-        }
-      }
-      PENDING.clear();
-      pendingResolved = true;
-    }
+    RENDER_SCALES.register(type, scale);
   }
 
   /** The scale registered for the entity's type, 1 when there is none. */
   public static float renderScale(Entity entity) {
-    if (!pendingResolved) {
-      resolvePending();
-    }
     ToDoubleFunction<Entity> scale = RENDER_SCALES.get(entity.getType());
     return scale == null ? 1.0F : (float) scale.applyAsDouble(entity);
   }
