@@ -19,7 +19,7 @@ User decisions (2026-11-23): "Luego voy a querer que otros mobs domesticables pu
 - [x] T1 S1-S2: remove the six mobs from `pickup_excluded`; check each is an `OwnableEntity` with an owner when tamed (the horse family, cats, parrots) and that the pickup scan, effects and icons work on them (riding, a parrot on the shoulder, a sitting cat); make take-back win over the horse family's inventory while it carries items.
 - [x] T2 S3: count the chest of tamed chested horses for holder effects, with no cap; keep them out of the pickup scan.
 - [x] T3 S5: changelog (the unreleased pickup entry updated in place) and the `PETS_PICK_UP` tooltip in en_us, es_es and es_mx.
-- [ ] T4: build and both dedicated servers (rcon checks: a tamed horse picks up, a mule's chest counts).
+- [x] T4: build and both dedicated servers (rcon checks: a tamed horse picks up, a mule's chest counts). Done within T1 and T2 (L1, L2).
 - [ ] T5: fresh review.
 - [ ] T6: user in-game test on Fabric and Forge.
 
