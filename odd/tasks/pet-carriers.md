@@ -16,7 +16,7 @@ User decisions (2026-11-23): "Luego voy a querer que otros mobs domesticables pu
 
 ## Tasks
 
-- [ ] T1 S1-S2: remove the six mobs from `pickup_excluded`; check each is an `OwnableEntity` with an owner when tamed (the horse family, cats, parrots) and that the pickup scan, effects and icons work on them (riding, a parrot on the shoulder, a sitting cat); make take-back win over the horse family's inventory while it carries items.
+- [x] T1 S1-S2: remove the six mobs from `pickup_excluded`; check each is an `OwnableEntity` with an owner when tamed (the horse family, cats, parrots) and that the pickup scan, effects and icons work on them (riding, a parrot on the shoulder, a sitting cat); make take-back win over the horse family's inventory while it carries items.
 - [ ] T2 S3: count the chest of tamed chested horses for holder effects, with no cap; keep them out of the pickup scan.
 - [ ] T3 S5: changelog.
 - [ ] T4: build and both dedicated servers (rcon checks: a tamed horse picks up, a mule's chest counts).
@@ -26,3 +26,12 @@ User decisions (2026-11-23): "Luego voy a querer que otros mobs domesticables pu
 Risk: item 6 (no automated tests).
 
 ## Log
+
+- L1 (2026-11-23) T1: removed horse, camel, skeleton_horse, zombie_horse, cat and parrot from `pickup_excluded` (donkey, mule, llama, trader_llama stay for T2). No Java change was needed.
+  - Vanilla check (1.20.1 Mojang-mapped classes): `AbstractHorse` (horse, camel, skeleton and zombie horse) implements `OwnableEntity`, `Cat` and `Parrot` extend `TamableAnimal` (`OwnableEntity`). All read and write the `Owner` key (UUID int array, or a legacy name string). So the PETS group covers them once they have an owner. Trap skeleton horses (`SkeletonTrapGoal`) are `setTamed(true)` with no owner, and `Tame:1b` summons have none either: they are ownerless, fall to the vanilla group (not `Enemy`, not `NeutralMob`) and do not pick up. Only a horse tamed by a player (`tameWithName` sets the owner) carries. The allay is an `InventoryCarrier` and not `OwnableEntity`, so `canCarry` rejects it with no tag entry needed.
+  - Take-back (S2): `Mob.interact` is final and our HEAD hook runs before `mobInteract`, so with items and the owner sneaking with an empty main hand, take-back wins over `AbstractHorse.mobInteract` (sneak opens the inventory only after it). With nothing carried `takeAll` returns false and vanilla runs unchanged (horse inventory, cat or parrot sit toggle). Sneaking while riding dismounts, so a rider cannot trigger it on another mob unexpectedly. A camel's second rider can take items back from the camel.
+  - Ridden scan: `serverAiStep` runs for a ridden horse (`AbstractHorse.isImmobile` is only true while dead, eating or rearing; no `isEffectiveAi` override), so the scan keeps working; it pauses only while the horse eats or rears.
+  - Parrot on a shoulder: `ShoulderRidingEntity.setEntityOnShoulder` stores `saveWithoutId` on the player and calls `discard()` (no death, no `checkDespawn`), so our drop paths do not run; our key is written by `addAdditionalSaveData` and `respawnEntityOnShoulder` reloads it through `readAdditionalSaveData`. Checked a `CarriedItems` round trip through summon NBT. While on the shoulder the parrot is not an entity, so its items give no holder effects until it hops off.
+  - Goat Hoof: `PassiveItemEffects.onHolderTick` adds a transient `MOVEMENT_SPEED` modifier while the holder moves horizontally; `AbstractHorse.getRiddenSpeed` (and the camel's) reads `MOVEMENT_SPEED`, so a ridden horse gets the bonus. Not tested with a rider (needs a player).
+  - Servers (rcon, `PETS_PICK_UP` on, restored after): Fabric and Forge both: tamed and owned horse, camel, skeleton horse, zombie horse, cat and parrot picked up a crowbar and show `riskofrain_items:CarriedItems`; untamed horse, untamed cat, ownerless tamed skeleton horse, donkey and allay did not. `./gradlew build` passes.
+  - Left: T2 must count the chest in `ItemUtils.countItemStack` (it does not depend on `canCarry`, only the pickup scan does, so keeping the chested horses in `pickup_excluded` does not block it). T6: take-back with sneak + right-click on horse, camel, cat and parrot, riding with Goat Hoof, shoulder parrot.
