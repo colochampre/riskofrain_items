@@ -3,7 +3,7 @@
 ## Unreleased - Minecraft 1.20.1 (Fabric & Forge)
 
 ### New
-- **Mobs pick up Risk of Rain items.** Mobs can pick up Risk of Rain items from the ground and gain their passive effects. Four groups, each behind its own setting and all off by default: vanilla hostile mobs, pets (tamed wolves and other mobs with an owner), neutral creatures (wild wolves, polar bears, iron golems and neutral mobs from other mods) and hostile mobs from other mods. Creepers, bosses, mobs that fly or split, and pets that do not fight (cats, parrots, horses, llamas, camels) are excluded.
+- **Mobs pick up Risk of Rain items.** Mobs can pick up Risk of Rain items from the ground and gain their passive effects. Four groups, each behind its own setting and all off by default: vanilla hostile mobs, pets (tamed wolves and other mobs with an owner), neutral creatures (wild wolves, polar bears, iron golems and neutral mobs from other mods) and hostile mobs from other mods. Pets include horses, camels, cats and parrots; for donkeys, mules and llamas, the Risk of Rain items in their chest count instead. Creepers, bosses and mobs that fly or split are excluded.
 - **Carried items drop on death.** Optionally, mobs carrying items never despawn, so the items are not lost. A mob that converts into another (a zombie into a drowned, a skeleton into a stray) keeps its items; if the new mob cannot carry them, they drop.
 - **Take your items back.** The owner of a tamed mob (for example a wolf) can take its carried items back by sneaking and right-clicking it with an empty hand. Iron golems and other mobs without an owner never give items back.
 - **Carried items above the head.** Carriers show the icons of their items, with counts, within a configurable distance.
