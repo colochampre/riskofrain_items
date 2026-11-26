@@ -14,6 +14,9 @@
 ### Changed
 - **Cloth Config is now a required dependency** on both Fabric and Forge.
 
+### Fixed
+- **Painting names.** Paintings show their title and author, crediting each artist, instead of raw text keys.
+
 ## 2.0.0 - Minecraft 1.20.1 (Fabric & Forge)
 
 ### New
