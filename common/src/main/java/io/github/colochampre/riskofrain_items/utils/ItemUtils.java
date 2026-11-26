@@ -3,6 +3,8 @@ package io.github.colochampre.riskofrain_items.utils;
 import io.github.colochampre.riskofrain_items.RoRMod;
 import io.github.colochampre.riskofrain_items.carrier.CarriedItems;
 import io.github.colochampre.riskofrain_items.carrier.RoRItemCarrier;
+import io.github.colochampre.riskofrain_items.mixin.AbstractHorseAccessor;
+import io.github.colochampre.riskofrain_items.registry.RoRConfigs;
 import io.github.colochampre.riskofrain_items.registry.RoRItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
@@ -121,7 +124,29 @@ public class ItemUtils {
       return false;
     }
     return entity instanceof Mob mob && CarriedItems.hasItems(mob)
-            || entity instanceof InventoryCarrier && entity.getType().is(ITEM_USERS);
+            || entity instanceof InventoryCarrier && entity.getType().is(ITEM_USERS)
+            || entity instanceof AbstractChestedHorse horse && hasCountedChest(horse);
+  }
+
+  // A tamed donkey, mule or llama with an owner and a chest counts the items in it, under the pets setting. It is a
+  // cheap check (no container scan): an empty chest just counts zero. The setting is the only switch, since
+  // pickup_excluded only blocks ground pickup for these mobs
+  private static boolean hasCountedChest(AbstractChestedHorse horse) {
+    return horse.hasChest() && horse.getOwnerUUID() != null && RoRConfigs.get().PETS_PICK_UP;
+  }
+
+  private static int countChestItemStack(AbstractChestedHorse horse, Item item) {
+    int total = 0;
+    Container inventory = ((AbstractHorseAccessor) horse).riskofrain_items$getInventory();
+    // Slots 0 and 1 hold the saddle and the armor or carpet; they are never Risk of Rain items, so scanning the
+    // whole container is correct and simpler
+    for (int i = 0; i < inventory.getContainerSize(); ++i) {
+      ItemStack stack = inventory.getItem(i);
+      if (stack.is(item)) {
+        total += stack.getCount();
+      }
+    }
+    return total;
   }
 
   // A player counts the whole inventory (main slots, armor slots and offhand) and the containers sitting in it, such
@@ -136,6 +161,9 @@ public class ItemUtils {
     }
     if (entity instanceof InventoryCarrier carrier && entity.getType().is(ITEM_USERS)) {
       total += countHolderItemStack(carrier, item);
+    }
+    if (entity instanceof AbstractChestedHorse horse && hasCountedChest(horse)) {
+      total += countChestItemStack(horse, item);
     }
     return total;
   }

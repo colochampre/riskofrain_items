@@ -60,7 +60,17 @@ public class PassiveItemEffects {
   // Architectury 9 has no event for every living entity, so Forge (LivingTickEvent) and Fabric (a mixin on
   // LivingEntity.tick) call this for each one. The instanceof inside isItemHolder keeps it cheap for the rest
   public static void onHolderTick(LivingEntity entity) {
-    if (entity.level().isClientSide() || !ItemUtils.isItemHolder(entity)) {
+    // Players keep their own state in STATES (onPlayerTick), so they must not reach the cleanup below
+    if (entity.level().isClientSide() || entity instanceof Player) {
+      return;
+    }
+    if (!ItemUtils.isItemHolder(entity)) {
+      // A mob that just stopped being a holder (items taken back, the pets setting turned off) ticks here once with
+      // its state still recorded: clear it and the Goat Hoof bonus, which it might have kept if it was moving.
+      // Every holder that got the bonus has a state, so the other entities only pay one map lookup
+      if (!STATES.isEmpty() && STATES.remove(entity.getUUID()) != null) {
+        goatHoof(entity, 0, false);
+      }
       return;
     }
     int fungus = ItemUtils.countItemStack(entity, RoRItems.BUSTLING_FUNGUS.get());
